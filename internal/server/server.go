@@ -7,6 +7,7 @@ import (
 	"github.com/AleksK1NG/email-microservice/internal/email/repository"
 	"github.com/AleksK1NG/email-microservice/internal/email/usecase"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/streadway/amqp"
@@ -18,6 +19,7 @@ import (
 
 // Images service
 type Server struct {
+	db         *sqlx.DB
 	mailDialer *gomail.Dialer
 	amqpConn   *amqp.Connection
 	logger     logger.Logger
@@ -25,13 +27,13 @@ type Server struct {
 }
 
 // Server constructor
-func NewEmailsServer(amqpConn *amqp.Connection, logger logger.Logger, cfg *config.Config, mailDialer *gomail.Dialer) *Server {
-	return &Server{amqpConn: amqpConn, logger: logger, cfg: cfg, mailDialer: mailDialer}
+func NewEmailsServer(amqpConn *amqp.Connection, logger logger.Logger, cfg *config.Config, mailDialer *gomail.Dialer, db *sqlx.DB) *Server {
+	return &Server{amqpConn: amqpConn, logger: logger, cfg: cfg, mailDialer: mailDialer, db: db}
 }
 
 // Run server
 func (s *Server) Run() error {
-	emailRepository := repository.NewEmailsRepository()
+	emailRepository := repository.NewEmailsRepository(s.db)
 	mailDialer := mailer.NewMailer(s.cfg, s.mailDialer)
 	emailUseCase := usecase.NewEmailUseCase(emailRepository, s.logger, mailDialer)
 	emailsAmqpConsumer := rabbitmq.NewImagesConsumer(s.amqpConn, s.logger, emailUseCase)

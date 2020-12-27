@@ -1,11 +1,15 @@
 package repository
 
+import "github.com/jmoiron/sqlx"
+
 // Images Emails Repository
-type EmailsRepository struct{}
+type EmailsRepository struct {
+	db *sqlx.DB
+}
 
 // Images AWS repository constructor
-func NewEmailsRepository() *EmailsRepository {
-	return &EmailsRepository{}
+func NewEmailsRepository(db *sqlx.DB) *EmailsRepository {
+	return &EmailsRepository{db: db}
 }
 
 // Send email

@@ -46,7 +46,7 @@ postgres:
   PostgresqlPort: 5432
   PostgresqlUser: postgres
   PostgresqlPassword: postgres
-  PostgresqlDbname: auth_db
+  PostgresqlDbname: mails_db
   PostgresqlSslmode: false
   PgDriver: pgx
 
