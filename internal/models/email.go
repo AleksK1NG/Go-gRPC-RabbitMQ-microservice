@@ -4,9 +4,10 @@ import "github.com/google/uuid"
 
 // Email struct
 type Email struct {
-	EmailID  uuid.UUID `json:"emailId" db:"email_id" validate:"omitempty"`
-	AddrFrom string    `json:"from" db:"addr_from" validate:"required,email"`
-	AddrTo   string    `json:"to" db:"addr_to" validate:"required,email"`
-	Title    string    `json:"title" db:"title" validate:"required,lte=250"`
-	Body     string    `json:"body" db:"body" validate:"required"`
+	EmailID     uuid.UUID `json:"emailId" db:"email_id" validate:"omitempty"`
+	To          []string  `json:"to" db:"to" validate:"required,gte=6"`
+	From        string    `json:"from" db:"from" validate:"required,email"`
+	Body        string    `json:"body" db:"body" validate:"required"`
+	Subject     string    `json:"subject" db:"subject" validate:"required,lte=250"`
+	ContentType string    `json:"contentType" db:"content_type" validate:"required,lte=250"`
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/AleksK1NG/email-microservice/internal/server"
 	"github.com/AleksK1NG/email-microservice/pkg/jaeger"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
+	"github.com/AleksK1NG/email-microservice/pkg/mailer"
 	"github.com/AleksK1NG/email-microservice/pkg/postgres"
 	"github.com/AleksK1NG/email-microservice/pkg/rabbitmq"
 	"github.com/opentracing/opentracing-go"
@@ -56,7 +57,10 @@ func main() {
 	defer closer.Close()
 	appLogger.Info("Opentracing connected")
 
-	s := server.NewEmailsServer(amqpConn, appLogger, cfg)
+	mailDialer := mailer.NewMailDialer(cfg)
+	appLogger.Info("Mail dialer connected")
+
+	s := server.NewEmailsServer(amqpConn, appLogger, cfg, mailDialer)
 
 	if err := s.Run(); err != nil {
 		appLogger.Fatal(err)

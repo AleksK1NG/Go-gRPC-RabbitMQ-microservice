@@ -3,12 +3,14 @@ package server
 import (
 	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/internal/email/delivery/rabbitmq"
+	"github.com/AleksK1NG/email-microservice/internal/email/mailer"
 	"github.com/AleksK1NG/email-microservice/internal/email/repository"
 	"github.com/AleksK1NG/email-microservice/internal/email/usecase"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
 	"github.com/labstack/echo/v4"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/streadway/amqp"
+	"gopkg.in/gomail.v2"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,20 +18,22 @@ import (
 
 // Images service
 type Server struct {
-	amqpConn *amqp.Connection
-	logger   logger.Logger
-	cfg      *config.Config
+	mailDialer *gomail.Dialer
+	amqpConn   *amqp.Connection
+	logger     logger.Logger
+	cfg        *config.Config
 }
 
 // Server constructor
-func NewEmailsServer(amqpConn *amqp.Connection, logger logger.Logger, cfg *config.Config) *Server {
-	return &Server{amqpConn: amqpConn, logger: logger, cfg: cfg}
+func NewEmailsServer(amqpConn *amqp.Connection, logger logger.Logger, cfg *config.Config, mailDialer *gomail.Dialer) *Server {
+	return &Server{amqpConn: amqpConn, logger: logger, cfg: cfg, mailDialer: mailDialer}
 }
 
 // Run server
 func (s *Server) Run() error {
 	emailRepository := repository.NewEmailsRepository()
-	emailUseCase := usecase.NewEmailUseCase(emailRepository, s.logger)
+	mailDialer := mailer.NewMailer(s.cfg, s.mailDialer)
+	emailUseCase := usecase.NewEmailUseCase(emailRepository, s.logger, mailDialer)
 	emailsAmqpConsumer := rabbitmq.NewImagesConsumer(s.amqpConn, s.logger, emailUseCase)
 
 	go func() {

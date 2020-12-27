@@ -1,35 +1,39 @@
 package usecase
 
 import (
-	"bytes"
 	"context"
+	"encoding/json"
 	"github.com/AleksK1NG/email-microservice/internal/email"
+	"github.com/AleksK1NG/email-microservice/internal/models"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/streadway/amqp"
-	"io/ioutil"
 )
 
 // Image useCase
 type EmailUseCase struct {
+	mailer     email.Mailer
 	emailsRepo email.EmailsRepository
 	logger     logger.Logger
 }
 
 // Image useCase constructor
-func NewEmailUseCase(emailsRepo email.EmailsRepository, logger logger.Logger) *EmailUseCase {
-	return &EmailUseCase{emailsRepo: emailsRepo, logger: logger}
+func NewEmailUseCase(emailsRepo email.EmailsRepository, logger logger.Logger, mailer email.Mailer) *EmailUseCase {
+	return &EmailUseCase{emailsRepo: emailsRepo, logger: logger, mailer: mailer}
 }
 
 // Send email
 func (e *EmailUseCase) SendEmail(ctx context.Context, delivery amqp.Delivery) error {
-	reader := bytes.NewReader(delivery.Body)
-	deliveryBytes, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return errors.Wrap(err, "ioutil.ReadAll")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.SendEmail")
+	defer span.Finish()
+
+	mail := &models.Email{}
+	if err := json.Unmarshal(delivery.Body, mail); err != nil {
+		return errors.Wrap(err, "json.Unmarshal")
 	}
 
-	e.logger.Infof("SendEmail: %s", string(deliveryBytes))
+	e.logger.Infof("SendEmail: %#v", mail)
 
 	return nil
 }

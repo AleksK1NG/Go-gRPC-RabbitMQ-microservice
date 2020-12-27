@@ -19,6 +19,7 @@ type Config struct {
 	Logger   Logger
 	AWS      AWS
 	Jaeger   Jaeger
+	Smtp     Smtp
 }
 
 // Server config struct
@@ -41,6 +42,15 @@ type ServerConfig struct {
 	Time              time.Duration
 }
 
+// Smtp
+type Smtp struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+}
+
+// RabbitMQ
 type RabbitMQ struct {
 	Host           string
 	Port           string
