@@ -85,5 +85,5 @@ aws:
 
 jaeger:
   Host: localhost:6831
-  ServiceName: Auth_GRPC
+  ServiceName: mail_service
   LogSpans: false
