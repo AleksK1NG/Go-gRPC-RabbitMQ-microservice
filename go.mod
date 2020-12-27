@@ -4,6 +4,8 @@ go 1.15
 
 require (
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
+	github.com/jackc/pgx v3.6.2+incompatible
+	github.com/jmoiron/sqlx v1.2.0
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pkg/errors v0.9.1
@@ -14,4 +16,6 @@ require (
 	github.com/uber/jaeger-lib v2.4.0+incompatible
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0
+	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
+	golang.org/x/text v0.3.4 // indirect
 )

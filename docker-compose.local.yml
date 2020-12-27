@@ -1,6 +1,21 @@
 version: "3.8"
 
 services:
+  postgesql:
+    image: postgres:13-alpine
+    container_name: auth_postgesql
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=auth_db
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - microservice_network
+
   rabbitmq:
     # There is a prebuilt RabbitMQ image; see
     # https://hub.docker.com/_/rabbitmq/ for details.
