@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/AleksK1NG/email-microservice/internal/email"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -109,6 +110,8 @@ func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delive
 	defer wg.Done()
 
 	for delivery := range messages {
+		span, ctx := opentracing.StartSpanFromContext(ctx, "EmailsConsumer.worker")
+
 		c.logger.Infof("processDeliveries deliveryTag% v", delivery.DeliveryTag)
 
 		incomingMessages.Inc()
@@ -120,12 +123,14 @@ func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delive
 			}
 			errorMessages.Inc()
 			c.logger.Errorf("Failed to process delivery: %v", err)
+			span.Finish()
 		} else {
 			successMessages.Inc()
 			err = delivery.Ack(false)
 			if err != nil {
 				c.logger.Errorf("Failed to acknowledge delivery: %v", err)
 			}
+			span.Finish()
 		}
 	}
 
