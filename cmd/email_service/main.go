@@ -60,7 +60,7 @@ func main() {
 	mailDialer := mailer.NewMailDialer(cfg)
 	appLogger.Info("Mail dialer connected")
 
-	s := server.NewEmailsServer(amqpConn, appLogger, cfg, mailDialer)
+	s := server.NewEmailsServer(amqpConn, appLogger, cfg, mailDialer, psqlDB)
 
 	if err := s.Run(); err != nil {
 		appLogger.Fatal(err)
