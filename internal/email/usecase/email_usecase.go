@@ -8,6 +8,7 @@ import (
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
 	"github.com/AleksK1NG/email-microservice/pkg/utils"
 	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/log"
 	"github.com/pkg/errors"
 	"github.com/streadway/amqp"
 )
@@ -38,7 +39,17 @@ func (e *EmailUseCase) SendEmail(ctx context.Context, delivery amqp.Delivery) er
 		return errors.Wrap(err, "ValidateStruct")
 	}
 
-	e.logger.Infof("SendEmail: %#v", mail)
+	//e.logger.Infof("SendEmail: %#v", mail)
+	//if err := e.mailer.Send(ctx, mail); err != nil {
+	//	return errors.Wrap(err, "ValidateStruct")
+	//}
 
+	createdEmail, err := e.emailsRepo.CreateEmail(ctx, mail)
+	if err != nil {
+		return errors.Wrap(err, "emailsRepo.CreateEmail")
+	}
+
+	span.LogFields(log.String("emailID", createdEmail.EmailID.String()))
+	e.logger.Infof("Success send email: %v", createdEmail.EmailID)
 	return nil
 }
