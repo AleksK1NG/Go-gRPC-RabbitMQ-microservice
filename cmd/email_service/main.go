@@ -61,5 +61,4 @@ func main() {
 	if err := s.Run(); err != nil {
 		appLogger.Fatal(err)
 	}
-
 }
