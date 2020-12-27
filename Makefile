@@ -2,10 +2,10 @@
 # Main
 
 run:
-	go run ./cmd/auth/main.go
+	go run ./cmd/email_service/main.go
 
 build:
-	go build ./cmd/auth/main.go
+	go build ./cmd/email_service/main.go
 
 test:
 	go test -cover ./...
@@ -44,16 +44,16 @@ run-linter:
 # Go migrate postgresql
 
 force:
-	migrate -database postgres://postgres:postgres@localhost:5432/auth_db?sslmode=disable -path migrations force 1
+	migrate -database postgres://postgres:postgres@localhost:5432/mails_db?sslmode=disable -path migrations force 1
 
 version:
-	migrate -database postgres://postgres:postgres@localhost:5432/auth_db?sslmode=disable -path migrations version
+	migrate -database postgres://postgres:postgres@localhost:5432/mails_db?sslmode=disable -path migrations version
 
 migrate_up:
-	migrate -database postgres://postgres:postgres@localhost:5432/auth_db?sslmode=disable -path migrations up 1
+	migrate -database postgres://postgres:postgres@localhost:5432/mails_db?sslmode=disable -path migrations up 1
 
 migrate_down:
-	migrate -database postgres://postgres:postgres@localhost:5432/auth_db?sslmode=disable -path migrations down 1
+	migrate -database postgres://postgres:postgres@localhost:5432/mails_db?sslmode=disable -path migrations down 1
 
 
 # ==============================================================================
