@@ -16,6 +16,12 @@ server:
   MaxConnectionAge: 5
   Time: 120
 
+Smtp:
+  Host:
+  Port:
+  User:
+  Password:
+
 rabbitmq:
   Host: localhost
   Port: 5672

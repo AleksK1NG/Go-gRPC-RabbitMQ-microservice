@@ -1,0 +1,7 @@
+{
+  "to": ["alex@gmail.com"],
+  "from": "mailservice@mail.ru",
+  "subject": "registration confirmation",
+  "body": "registration confirmation body",
+  "contentType": "text/plain"
+}
