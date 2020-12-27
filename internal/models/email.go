@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"strings"
 	"time"
 )
 
@@ -14,4 +15,9 @@ type Email struct {
 	Subject     string    `json:"subject" db:"subject" validate:"required,lte=250"`
 	ContentType string    `json:"contentType" db:"content_type" validate:"required,lte=250"`
 	CreatedAt   time.Time `json:"created_at,omitempty" db:"created_at"`
+}
+
+// Get string from addresses
+func (e *Email) GetToString() string {
+	return strings.Join(e.To, ",")
 }
