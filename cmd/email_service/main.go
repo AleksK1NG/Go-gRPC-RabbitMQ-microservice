@@ -3,8 +3,10 @@ package main
 import (
 	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/internal/server"
+	"github.com/AleksK1NG/email-microservice/pkg/jaeger"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
 	"github.com/AleksK1NG/email-microservice/pkg/rabbitmq"
+	"github.com/opentracing/opentracing-go"
 	"log"
 	"os"
 )
@@ -34,6 +36,16 @@ func main() {
 		appLogger.Fatal(err)
 	}
 	defer amqpConn.Close()
+
+	tracer, closer, err := jaeger.InitJaeger(cfg)
+	if err != nil {
+		appLogger.Fatal("cannot create tracer", err)
+	}
+	appLogger.Info("Jaeger connected")
+
+	opentracing.SetGlobalTracer(tracer)
+	defer closer.Close()
+	appLogger.Info("Opentracing connected")
 
 	s := server.NewEmailsServer(amqpConn, appLogger, cfg)
 
