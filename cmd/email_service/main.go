@@ -5,6 +5,7 @@ import (
 	"github.com/AleksK1NG/email-microservice/internal/server"
 	"github.com/AleksK1NG/email-microservice/pkg/jaeger"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
+	"github.com/AleksK1NG/email-microservice/pkg/postgres"
 	"github.com/AleksK1NG/email-microservice/pkg/rabbitmq"
 	"github.com/opentracing/opentracing-go"
 	"log"
@@ -36,6 +37,14 @@ func main() {
 		appLogger.Fatal(err)
 	}
 	defer amqpConn.Close()
+
+	psqlDB, err := postgres.NewPsqlDB(cfg)
+	if err != nil {
+		appLogger.Fatalf("Postgresql init: %s", err)
+	}
+	defer psqlDB.Close()
+
+	appLogger.Infof("PostgreSQL connected: %#v", psqlDB.Stats())
 
 	tracer, closer, err := jaeger.InitJaeger(cfg)
 	if err != nil {
