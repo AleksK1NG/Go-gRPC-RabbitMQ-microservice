@@ -1,6 +1,9 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 // Email struct
 type Email struct {
@@ -10,4 +13,5 @@ type Email struct {
 	Body        string    `json:"body" db:"body" validate:"required"`
 	Subject     string    `json:"subject" db:"subject" validate:"required,lte=250"`
 	ContentType string    `json:"contentType" db:"content_type" validate:"required,lte=250"`
+	CreatedAt   time.Time `json:"created_at,omitempty" db:"created_at"`
 }
