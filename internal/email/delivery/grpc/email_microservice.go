@@ -82,3 +82,10 @@ func (e *EmailMicroservice) convertEmailToProto(email *models.Email) *emailServi
 		CreatedAt:   timestamppb.New(email.CreatedAt),
 	}
 }
+
+// Find emails by receiver address
+func (e *EmailMicroservice) FindEmailsByReceiver(ctx context.Context, r *emailService.FindEmailsByReceiverRequest) (*emailService.FindEmailsByReceiverResponse, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailById")
+	defer span.Finish()
+	return nil, nil
+}
