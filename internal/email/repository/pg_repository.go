@@ -25,8 +25,6 @@ func (e *EmailsRepository) CreateEmail(ctx context.Context, email *models.Email)
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailsRepository.CreateEmail")
 	defer span.Finish()
 
-	createEmailQuery := `INSERT INTO emails ("to", "from", subject, body, content_type) VALUES ($1, $2, $3, $4, $5) RETURNING email_id`
-
 	var id uuid.UUID
 	if err := e.db.QueryRowxContext(ctx, createEmailQuery, email.GetToString(), email.From, email.Subject, email.Body, email.ContentType).Scan(&id); err != nil {
 		return nil, errors.Wrap(err, "db.QueryRowxContext")
@@ -40,8 +38,6 @@ func (e *EmailsRepository) CreateEmail(ctx context.Context, email *models.Email)
 func (e *EmailsRepository) FindEmailById(ctx context.Context, emailID uuid.UUID) (*models.Email, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailsRepository.FindEmailById")
 	defer span.Finish()
-
-	findEmailByIdQuery := `SELECT email_id, "to", "from", subject, body, content_type, created_at FROM emails WHERE email_id = $1`
 
 	var to string
 	email := &models.Email{}
@@ -62,11 +58,10 @@ func (e *EmailsRepository) FindEmailById(ctx context.Context, emailID uuid.UUID)
 }
 
 // Find emails by receiver
-func (e *EmailsRepository) FindEmailsByReceiver(ctx context.Context, to string, query *utils.PaginationQuery) (*models.EmailsList, error) {
+func (e *EmailsRepository) FindEmailsByReceiver(ctx context.Context, to string, query *utils.PaginationQuery) (list *models.EmailsList, err error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailsRepository.FindEmailsByReceiver")
 	defer span.Finish()
 
-	totalCountQuery := `SELECT COUNT (email_id) as totalCount FROM emails WHERE "to" ILIKE '%' || $1 || '%'`
 	var totalCount uint64
 	if err := e.db.QueryRowContext(ctx, totalCountQuery, to).Scan(&totalCount); err != nil {
 		return nil, errors.Wrap(err, "db.QueryRowContext")
@@ -75,14 +70,15 @@ func (e *EmailsRepository) FindEmailsByReceiver(ctx context.Context, to string, 
 		return &models.EmailsList{Emails: []*models.Email{}}, nil
 	}
 
-	findEmailByReceiverQuery := `SELECT email_id, "to", "from", subject, body, content_type, created_at 
-	FROM emails WHERE "to" ILIKE '%' || $1 || '%' ORDER BY created_at OFFSET $2 LIMIT $3`
-
 	rows, err := e.db.QueryxContext(ctx, findEmailByReceiverQuery, to, query.GetOffset(), query.GetLimit())
 	if err != nil {
 		return nil, errors.Wrap(err, "db.QueryxContext")
 	}
-	defer rows.Close()
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil {
+			err = closeErr
+		}
+	}()
 
 	if err := rows.Err(); err != nil {
 		return nil, errors.Wrap(err, "rows.Err")

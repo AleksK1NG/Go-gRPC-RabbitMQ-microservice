@@ -59,13 +59,7 @@ func (s *Server) Run() error {
 	if err != nil {
 		return err
 	}
-	//if err := emailsPublisher.SetupExchangeAndQueue(
-	//	s.cfg.RabbitMQ.Exchange,
-	//	s.cfg.RabbitMQ.Queue, "",
-	//	s.cfg.RabbitMQ.ConsumerTag,
-	//); err != nil {
-	//	return err
-	//}
+
 	defer emailsPublisher.CloseChan()
 	s.logger.Info("Emails Publisher initialized")
 
