@@ -48,3 +48,11 @@ func (e *EmailMicroservice) SendEmails(ctx context.Context, r *emailService.Send
 
 	return &emailService.SendEmailResponse{Status: "Ok"}, nil
 }
+
+// Find email by id
+func (e *EmailMicroservice) FindEmailById(ctx context.Context, r *emailService.FindEmailByIdRequest) (*emailService.FindEmailByIdResponse, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailById")
+	defer span.Finish()
+
+	return &emailService.FindEmailByIdResponse{Email: nil}, nil
+}

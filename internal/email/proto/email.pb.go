@@ -237,6 +237,100 @@ func (x *SendEmailResponse) GetStatus() string {
 	return ""
 }
 
+type FindEmailByIdRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EmailUuid string `protobuf:"bytes,1,opt,name=email_uuid,json=emailUuid,proto3" json:"email_uuid,omitempty"`
+}
+
+func (x *FindEmailByIdRequest) Reset() {
+	*x = FindEmailByIdRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_email_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FindEmailByIdRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FindEmailByIdRequest) ProtoMessage() {}
+
+func (x *FindEmailByIdRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_email_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FindEmailByIdRequest.ProtoReflect.Descriptor instead.
+func (*FindEmailByIdRequest) Descriptor() ([]byte, []int) {
+	return file_email_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *FindEmailByIdRequest) GetEmailUuid() string {
+	if x != nil {
+		return x.EmailUuid
+	}
+	return ""
+}
+
+type FindEmailByIdResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Email *Email `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+}
+
+func (x *FindEmailByIdResponse) Reset() {
+	*x = FindEmailByIdResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_email_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FindEmailByIdResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FindEmailByIdResponse) ProtoMessage() {}
+
+func (x *FindEmailByIdResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_email_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FindEmailByIdResponse.ProtoReflect.Descriptor instead.
+func (*FindEmailByIdResponse) Descriptor() ([]byte, []int) {
+	return file_email_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *FindEmailByIdResponse) GetEmail() *Email {
+	if x != nil {
+		return x.Email
+	}
+	return nil
+}
+
 var File_email_proto protoreflect.FileDescriptor
 
 var file_email_proto_rawDesc = []byte{
@@ -265,14 +359,27 @@ var file_email_proto_rawDesc = []byte{
 	0x6f, 0x64, 0x79, 0x22, 0x2b, 0x0a, 0x11, 0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c,
 	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74,
 	0x75, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73,
-	0x32, 0x5d, 0x0a, 0x0c, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
-	0x12, 0x4d, 0x0a, 0x0a, 0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x1e,
-	0x2e, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x53, 0x65,
-	0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f,
-	0x2e, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x53, 0x65,
-	0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42,
-	0x10, 0x5a, 0x0e, 0x2e, 0x3b, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
-	0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0x35, 0x0a, 0x14, 0x46, 0x69, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x42, 0x79, 0x49,
+	0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x65, 0x6d, 0x61, 0x69,
+	0x6c, 0x5f, 0x75, 0x75, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x65, 0x6d,
+	0x61, 0x69, 0x6c, 0x55, 0x75, 0x69, 0x64, 0x22, 0x42, 0x0a, 0x15, 0x46, 0x69, 0x6e, 0x64, 0x45,
+	0x6d, 0x61, 0x69, 0x6c, 0x42, 0x79, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x29, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x13, 0x2e, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x45,
+	0x6d, 0x61, 0x69, 0x6c, 0x52, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x32, 0xb7, 0x01, 0x0a, 0x0c,
+	0x45, 0x6d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x4d, 0x0a, 0x0a,
+	0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x1e, 0x2e, 0x65, 0x6d, 0x61,
+	0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d,
+	0x61, 0x69, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x65, 0x6d, 0x61,
+	0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d,
+	0x61, 0x69, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x58, 0x0a, 0x0d, 0x46,
+	0x69, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x42, 0x79, 0x49, 0x64, 0x12, 0x22, 0x2e, 0x65,
+	0x6d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x46, 0x69, 0x6e, 0x64,
+	0x45, 0x6d, 0x61, 0x69, 0x6c, 0x42, 0x79, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x23, 0x2e, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e,
+	0x46, 0x69, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x42, 0x79, 0x49, 0x64, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x10, 0x5a, 0x0e, 0x2e, 0x3b, 0x65, 0x6d, 0x61, 0x69, 0x6c,
+	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -287,22 +394,27 @@ func file_email_proto_rawDescGZIP() []byte {
 	return file_email_proto_rawDescData
 }
 
-var file_email_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_email_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_email_proto_goTypes = []interface{}{
 	(*Email)(nil),                 // 0: emailService.Email
 	(*SendEmailRequest)(nil),      // 1: emailService.SendEmailRequest
 	(*SendEmailResponse)(nil),     // 2: emailService.SendEmailResponse
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*FindEmailByIdRequest)(nil),  // 3: emailService.FindEmailByIdRequest
+	(*FindEmailByIdResponse)(nil), // 4: emailService.FindEmailByIdResponse
+	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
 var file_email_proto_depIdxs = []int32{
-	3, // 0: emailService.Email.created_at:type_name -> google.protobuf.Timestamp
-	1, // 1: emailService.EmailService.SendEmails:input_type -> emailService.SendEmailRequest
-	2, // 2: emailService.EmailService.SendEmails:output_type -> emailService.SendEmailResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	5, // 0: emailService.Email.created_at:type_name -> google.protobuf.Timestamp
+	0, // 1: emailService.FindEmailByIdResponse.email:type_name -> emailService.Email
+	1, // 2: emailService.EmailService.SendEmails:input_type -> emailService.SendEmailRequest
+	3, // 3: emailService.EmailService.FindEmailById:input_type -> emailService.FindEmailByIdRequest
+	2, // 4: emailService.EmailService.SendEmails:output_type -> emailService.SendEmailResponse
+	4, // 5: emailService.EmailService.FindEmailById:output_type -> emailService.FindEmailByIdResponse
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_email_proto_init() }
@@ -347,6 +459,30 @@ func file_email_proto_init() {
 				return nil
 			}
 		}
+		file_email_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FindEmailByIdRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_email_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FindEmailByIdResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -354,7 +490,7 @@ func file_email_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_email_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -381,6 +517,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type EmailServiceClient interface {
 	SendEmails(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*SendEmailResponse, error)
+	FindEmailById(ctx context.Context, in *FindEmailByIdRequest, opts ...grpc.CallOption) (*FindEmailByIdResponse, error)
 }
 
 type emailServiceClient struct {
@@ -400,9 +537,19 @@ func (c *emailServiceClient) SendEmails(ctx context.Context, in *SendEmailReques
 	return out, nil
 }
 
+func (c *emailServiceClient) FindEmailById(ctx context.Context, in *FindEmailByIdRequest, opts ...grpc.CallOption) (*FindEmailByIdResponse, error) {
+	out := new(FindEmailByIdResponse)
+	err := c.cc.Invoke(ctx, "/emailService.EmailService/FindEmailById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EmailServiceServer is the server API for EmailService service.
 type EmailServiceServer interface {
 	SendEmails(context.Context, *SendEmailRequest) (*SendEmailResponse, error)
+	FindEmailById(context.Context, *FindEmailByIdRequest) (*FindEmailByIdResponse, error)
 }
 
 // UnimplementedEmailServiceServer can be embedded to have forward compatible implementations.
@@ -411,6 +558,9 @@ type UnimplementedEmailServiceServer struct {
 
 func (*UnimplementedEmailServiceServer) SendEmails(context.Context, *SendEmailRequest) (*SendEmailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendEmails not implemented")
+}
+func (*UnimplementedEmailServiceServer) FindEmailById(context.Context, *FindEmailByIdRequest) (*FindEmailByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindEmailById not implemented")
 }
 
 func RegisterEmailServiceServer(s *grpc.Server, srv EmailServiceServer) {
@@ -435,6 +585,24 @@ func _EmailService_SendEmails_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EmailService_FindEmailById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindEmailByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EmailServiceServer).FindEmailById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/emailService.EmailService/FindEmailById",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EmailServiceServer).FindEmailById(ctx, req.(*FindEmailByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _EmailService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "emailService.EmailService",
 	HandlerType: (*EmailServiceServer)(nil),
@@ -442,6 +610,10 @@ var _EmailService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendEmails",
 			Handler:    _EmailService_SendEmails_Handler,
+		},
+		{
+			MethodName: "FindEmailById",
+			Handler:    _EmailService_FindEmailById_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
