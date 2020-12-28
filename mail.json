@@ -1,5 +1,5 @@
 {
-  "to": ["alex@gmail.com"],
+  "to": ["alex@gmail.com", "alex123@gmail.com", "alex555@gmail.com"],
   "from": "mailservice@mail.ru",
   "subject": "registration confirmation",
   "body": "registration confirmation body",
