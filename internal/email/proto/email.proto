@@ -27,6 +27,15 @@ message SendEmailResponse {
   string status = 1;
 }
 
+message FindEmailByIdRequest {
+  string email_uuid = 1;
+}
+
+message FindEmailByIdResponse {
+  Email email = 1;
+}
+
 service EmailService{
   rpc SendEmails(SendEmailRequest) returns (SendEmailResponse);
+  rpc FindEmailById(FindEmailByIdRequest) returns (FindEmailByIdResponse);
 }
