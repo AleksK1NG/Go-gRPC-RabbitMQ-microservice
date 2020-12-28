@@ -34,8 +34,8 @@ func NewEmailsServer(amqpConn *amqp.Connection, logger logger.Logger, cfg *confi
 // Run server
 func (s *Server) Run() error {
 	emailRepository := repository.NewEmailsRepository(s.db)
-	mailDialer := mailer.NewMailer(s.cfg, s.mailDialer)
-	emailUseCase := usecase.NewEmailUseCase(emailRepository, s.logger, mailDialer)
+	mailDialer := mailer.NewMailer(s.mailDialer)
+	emailUseCase := usecase.NewEmailUseCase(emailRepository, s.logger, mailDialer, s.cfg)
 	emailsAmqpConsumer := rabbitmq.NewImagesConsumer(s.amqpConn, s.logger, emailUseCase)
 
 	go func() {

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"encoding/json"
+	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/internal/email"
 	"github.com/AleksK1NG/email-microservice/internal/models"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
@@ -18,11 +19,12 @@ type EmailUseCase struct {
 	mailer     email.Mailer
 	emailsRepo email.EmailsRepository
 	logger     logger.Logger
+	cfg        *config.Config
 }
 
 // Image useCase constructor
-func NewEmailUseCase(emailsRepo email.EmailsRepository, logger logger.Logger, mailer email.Mailer) *EmailUseCase {
-	return &EmailUseCase{emailsRepo: emailsRepo, logger: logger, mailer: mailer}
+func NewEmailUseCase(emailsRepo email.EmailsRepository, logger logger.Logger, mailer email.Mailer, cfg *config.Config) *EmailUseCase {
+	return &EmailUseCase{emailsRepo: emailsRepo, logger: logger, mailer: mailer, cfg: cfg}
 }
 
 // Send email
@@ -35,14 +37,15 @@ func (e *EmailUseCase) SendEmail(ctx context.Context, delivery amqp.Delivery) er
 		return errors.Wrap(err, "json.Unmarshal")
 	}
 
+	mail.From = e.cfg.Smtp.User
 	if err := utils.ValidateStruct(ctx, mail); err != nil {
 		return errors.Wrap(err, "ValidateStruct")
 	}
 
-	//e.logger.Infof("SendEmail: %#v", mail)
-	//if err := e.mailer.Send(ctx, mail); err != nil {
-	//	return errors.Wrap(err, "ValidateStruct")
-	//}
+	e.logger.Infof("SendEmail: %#v", mail)
+	if err := e.mailer.Send(ctx, mail); err != nil {
+		return errors.Wrap(err, "mailer.Send")
+	}
 
 	createdEmail, err := e.emailsRepo.CreateEmail(ctx, mail)
 	if err != nil {

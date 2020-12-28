@@ -17,10 +17,10 @@ server:
   Time: 120
 
 Smtp:
-  Host:
-  Port:
-  User:
-  Password:
+  Host: Host.com
+  Port: 123
+  User: User@gmail.com
+  Password: Password
 
 rabbitmq:
   Host: localhost
