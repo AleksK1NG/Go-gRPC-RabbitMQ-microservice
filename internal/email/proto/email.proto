@@ -42,7 +42,7 @@ message FindEmailsByReceiverRequest {
 }
 
 message FindEmailsByReceiverResponse {
-  repeated Email email = 1;
+  repeated Email emails = 1;
   uint64 total_pages = 2;
   uint64 total_count = 3;
   bool has_more = 4;

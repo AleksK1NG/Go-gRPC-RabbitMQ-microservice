@@ -92,6 +92,6 @@ func GetTotalPages(totalCount uint64, pageSize uint64) uint64 {
 }
 
 // Get has more
-func GetHasMore(currentPage int, totalCount int, pageSize int) bool {
+func GetHasMore(currentPage uint64, totalCount uint64, pageSize uint64) bool {
 	return currentPage < totalCount/pageSize
 }
