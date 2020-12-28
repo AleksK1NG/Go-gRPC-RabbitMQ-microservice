@@ -2,7 +2,6 @@ package mailer
 
 import (
 	"context"
-	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/internal/models"
 	"github.com/opentracing/opentracing-go"
 	"gopkg.in/gomail.v2"
@@ -10,13 +9,12 @@ import (
 
 // Mailer agent
 type Mailer struct {
-	cfg        *config.Config
 	mailDialer *gomail.Dialer
 }
 
 // Mailer agent constructor
-func NewMailer(cfg *config.Config, mailDialer *gomail.Dialer) *Mailer {
-	return &Mailer{cfg: cfg, mailDialer: mailDialer}
+func NewMailer(mailDialer *gomail.Dialer) *Mailer {
+	return &Mailer{mailDialer: mailDialer}
 }
 
 // Send email
