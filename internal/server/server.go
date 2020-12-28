@@ -45,7 +45,7 @@ func NewEmailsServer(amqpConn *amqp.Connection, logger logger.Logger, cfg *confi
 
 // Run server
 func (s *Server) Run() error {
-	metrics, err := metrics.CreateMetrics(s.cfg.Metrics.URL, s.cfg.Metrics.ServiceName)
+	metric, err := metrics.CreateMetrics(s.cfg.Metrics.URL, s.cfg.Metrics.ServiceName)
 	if err != nil {
 		s.logger.Errorf("CreateMetrics Error: %s", err)
 	}
@@ -55,7 +55,7 @@ func (s *Server) Run() error {
 		s.cfg.Metrics.ServiceName,
 	)
 
-	im := interceptors.NewInterceptorManager(s.logger, s.cfg, metrics)
+	im := interceptors.NewInterceptorManager(s.logger, s.cfg, metric)
 
 	emailRepository := repository.NewEmailsRepository(s.db)
 	mailDialer := mailer.NewMailer(s.mailDialer)
@@ -66,7 +66,8 @@ func (s *Server) Run() error {
 		err := emailsAmqpConsumer.StartConsumer(
 			s.cfg.RabbitMQ.WorkerPoolSize,
 			s.cfg.RabbitMQ.Exchange,
-			s.cfg.RabbitMQ.Queue, "",
+			s.cfg.RabbitMQ.Queue,
+			s.cfg.RabbitMQ.RoutingKey,
 			s.cfg.RabbitMQ.ConsumerTag,
 		)
 		if err != nil {
@@ -88,7 +89,19 @@ func (s *Server) Run() error {
 	}
 	defer l.Close()
 
-	emailGrpcMicroservice := mailGrpc.NewEmailMicroservice(emailUseCase)
+	emailsPublisher, err := rabbitmq.NewEmailsPublisher(s.cfg, s.logger)
+	if err != nil {
+		return err
+	}
+	//if err := emailsPublisher.SetupExchangeAndQueue(
+	//	s.cfg.RabbitMQ.Exchange,
+	//	s.cfg.RabbitMQ.Queue, "",
+	//	s.cfg.RabbitMQ.ConsumerTag,
+	//); err != nil {
+	//	return err
+	//}
+	defer emailsPublisher.CloseChan()
+	s.logger.Info("Emails Publisher initialized")
 
 	server := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{
 		MaxConnectionIdle: s.cfg.Server.MaxConnectionIdle * time.Minute,
@@ -103,11 +116,22 @@ func (s *Server) Run() error {
 			grpcrecovery.UnaryServerInterceptor(),
 		),
 	)
+
+	emailGrpcMicroservice := mailGrpc.NewEmailMicroservice(emailUseCase, emailsPublisher, s.logger)
 	emailService.RegisterEmailServiceServer(server, emailGrpcMicroservice)
+	grpc_prometheus.Register(server)
+	s.logger.Info("Emails Service initialized")
 
 	if s.cfg.Server.Mode != "Production" {
 		reflection.Register(server)
 	}
+
+	go func() {
+		s.logger.Infof("Server is listening on port: %v", s.cfg.Server.Port)
+		if err := server.Serve(l); err != nil {
+			s.logger.Fatal(err)
+		}
+	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)

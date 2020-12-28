@@ -18,7 +18,9 @@ message Email {
 }
 
 message SendEmailRequest {
-  Email email = 1;
+  repeated string to = 1;
+  string subject = 2;
+  string body = 3;
 }
 
 message SendEmailResponse {

@@ -40,15 +40,15 @@ func NewImagesConsumer(amqpConn *amqp.Connection, logger logger.Logger, emailUC 
 }
 
 // Consume messages
-func (c *EmailsConsumer) CreateChannel(exchange, queueName, bindingKey, consumerTag string) (*amqp.Channel, error) {
+func (c *EmailsConsumer) CreateChannel(exchangeName, queueName, bindingKey, consumerTag string) (*amqp.Channel, error) {
 	ch, err := c.amqpConn.Channel()
 	if err != nil {
 		return nil, errors.Wrap(err, "Error amqpConn.Channel")
 	}
 
-	c.logger.Infof("Declaring exchange: %s", exchange)
+	c.logger.Infof("Declaring exchange: %s", exchangeName)
 	err = ch.ExchangeDeclare(
-		exchange,
+		exchangeName,
 		"direct",
 		true,
 		false,
@@ -77,14 +77,14 @@ func (c *EmailsConsumer) CreateChannel(exchange, queueName, bindingKey, consumer
 		queue.Name,
 		queue.Messages,
 		queue.Consumers,
-		exchange,
+		exchangeName,
 		bindingKey,
 	)
 
 	err = ch.QueueBind(
 		queue.Name,
 		bindingKey,
-		exchange,
+		exchangeName,
 		false,
 		nil,
 	)
