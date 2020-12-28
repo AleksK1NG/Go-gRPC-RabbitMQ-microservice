@@ -2,28 +2,26 @@ package grpc
 
 import (
 	"context"
-	"encoding/json"
+	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/internal/email"
-	"github.com/AleksK1NG/email-microservice/internal/email/delivery/rabbitmq"
 	emailService "github.com/AleksK1NG/email-microservice/internal/email/proto"
 	"github.com/AleksK1NG/email-microservice/internal/models"
 	"github.com/AleksK1NG/email-microservice/pkg/grpc_errors"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
-	"github.com/AleksK1NG/email-microservice/pkg/mime_types"
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc/status"
 )
 
 // Email gRPC microservice
 type EmailMicroservice struct {
-	logger    logger.Logger
-	emailUC   email.EmailsUseCase
-	publisher *rabbitmq.EmailsPublisher
+	cfg     *config.Config
+	logger  logger.Logger
+	emailUC email.EmailsUseCase
 }
 
 // Email gRPC microservice constructor
-func NewEmailMicroservice(emailUC email.EmailsUseCase, publisher *rabbitmq.EmailsPublisher, logger logger.Logger) *EmailMicroservice {
-	return &EmailMicroservice{emailUC: emailUC, publisher: publisher, logger: logger}
+func NewEmailMicroservice(emailUC email.EmailsUseCase, logger logger.Logger, cfg *config.Config) *EmailMicroservice {
+	return &EmailMicroservice{emailUC: emailUC, logger: logger, cfg: cfg}
 }
 
 // Send emails
@@ -32,21 +30,20 @@ func (e *EmailMicroservice) SendEmails(ctx context.Context, r *emailService.Send
 	defer span.Finish()
 
 	mail := &models.Email{
-		ContentType: mime_types.MIMEApplicationJSON,
-		To:          r.GetTo(),
-		Body:        r.GetBody(),
-		Subject:     r.GetSubject(),
+		From:    e.cfg.Smtp.User,
+		To:      r.GetTo(),
+		Body:    r.GetBody(),
+		Subject: r.GetSubject(),
 	}
 
-	mailBytes, err := json.Marshal(mail)
-	if err != nil {
-		e.logger.Errorf("registerReqToUserModel: %v", err)
-		return nil, status.Errorf(grpc_errors.ParseGRPCErrStatusCode(err), "json.Marshal: %v", err)
+	if err := mail.PrepareAndValidate(ctx); err != nil {
+		e.logger.Errorf("PrepareAndValidate: %v", err)
+		return nil, status.Errorf(grpc_errors.ParseGRPCErrStatusCode(err), "PrepareAndValidate: %v", err)
 	}
 
-	if err := e.publisher.Publish(mailBytes, mail.ContentType); err != nil {
-		e.logger.Errorf("publisher.Publish: %v", err)
-		return nil, status.Errorf(grpc_errors.ParseGRPCErrStatusCode(err), "publisher.Publish: %v", err)
+	if err := e.emailUC.PublishEmailToQueue(ctx, mail); err != nil {
+		e.logger.Errorf("emailUC.PublishEmailToQueue: %v", err)
+		return nil, status.Errorf(grpc_errors.ParseGRPCErrStatusCode(err), "emailUC.PublishEmailToQueue: %v", err)
 	}
 
 	return &emailService.SendEmailResponse{Status: "Ok"}, nil
