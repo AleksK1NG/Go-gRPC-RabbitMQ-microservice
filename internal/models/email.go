@@ -44,3 +44,13 @@ func (e *Email) PrepareAndValidate(ctx context.Context) error {
 func (e *Email) SetToFromString(to string) {
 	e.To = strings.Split(to, ",")
 }
+
+// Emails list with pagination
+type EmailsList struct {
+	TotalCount uint64   `json:"total_count"`
+	TotalPages uint64   `json:"total_pages"`
+	Page       uint64   `json:"page"`
+	Size       uint64   `json:"size"`
+	HasMore    bool     `json:"has_more"`
+	Emails     []*Email `json:"emails"`
+}

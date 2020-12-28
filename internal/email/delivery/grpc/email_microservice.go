@@ -8,6 +8,7 @@ import (
 	"github.com/AleksK1NG/email-microservice/internal/models"
 	"github.com/AleksK1NG/email-microservice/pkg/grpc_errors"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
+	"github.com/AleksK1NG/email-microservice/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc/status"
@@ -71,6 +72,40 @@ func (e *EmailMicroservice) FindEmailById(ctx context.Context, r *emailService.F
 	return &emailService.FindEmailByIdResponse{Email: e.convertEmailToProto(emailById)}, nil
 }
 
+// Find emails by receiver address
+func (e *EmailMicroservice) FindEmailsByReceiver(ctx context.Context, r *emailService.FindEmailsByReceiverRequest) (*emailService.FindEmailsByReceiverResponse, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailById")
+	defer span.Finish()
+
+	paginationQuery := &utils.PaginationQuery{
+		Size: r.GetSize(),
+		Page: r.GetPage(),
+	}
+
+	emails, err := e.emailUC.FindEmailsByReceiver(ctx, r.GetReceiverEmail(), paginationQuery)
+	if err != nil {
+		e.logger.Errorf("emailUC.FindEmailsByReceiver: %v", err)
+		return nil, status.Errorf(grpc_errors.ParseGRPCErrStatusCode(err), "emailUC.FindEmailsByReceiver: %v", err)
+	}
+
+	return &emailService.FindEmailsByReceiverResponse{
+		Emails:     e.convertEmailsListToProto(emails.Emails),
+		TotalPages: emails.TotalPages,
+		TotalCount: emails.TotalCount,
+		HasMore:    emails.HasMore,
+		Page:       emails.Page,
+		Size:       emails.Size,
+	}, nil
+}
+
+func (e *EmailMicroservice) convertEmailsListToProto(emails []*models.Email) []*emailService.Email {
+	protoEmails := make([]*emailService.Email, 0, len(emails))
+	for _, m := range emails {
+		protoEmails = append(protoEmails, e.convertEmailToProto(m))
+	}
+	return protoEmails
+}
+
 func (e *EmailMicroservice) convertEmailToProto(email *models.Email) *emailService.Email {
 	return &emailService.Email{
 		EmailId:     email.EmailID.String(),
@@ -81,11 +116,4 @@ func (e *EmailMicroservice) convertEmailToProto(email *models.Email) *emailServi
 		ContentType: email.ContentType,
 		CreatedAt:   timestamppb.New(email.CreatedAt),
 	}
-}
-
-// Find emails by receiver address
-func (e *EmailMicroservice) FindEmailsByReceiver(ctx context.Context, r *emailService.FindEmailsByReceiverRequest) (*emailService.FindEmailsByReceiverResponse, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailById")
-	defer span.Finish()
-	return nil, nil
 }

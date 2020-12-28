@@ -84,3 +84,11 @@ func (e *EmailUseCase) FindEmailById(ctx context.Context, emailID uuid.UUID) (*m
 
 	return e.emailsRepo.FindEmailById(ctx, emailID)
 }
+
+// Find emails by receiver
+func (e *EmailUseCase) FindEmailsByReceiver(ctx context.Context, to string, query *utils.PaginationQuery) (*models.EmailsList, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.SendEmail")
+	defer span.Finish()
+
+	return e.emailsRepo.FindEmailsByReceiver(ctx, to, query)
+}
