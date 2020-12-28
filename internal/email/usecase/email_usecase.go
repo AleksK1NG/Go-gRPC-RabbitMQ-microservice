@@ -9,6 +9,7 @@ import (
 	"github.com/AleksK1NG/email-microservice/internal/models"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
 	"github.com/AleksK1NG/email-microservice/pkg/utils"
+	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/pkg/errors"
@@ -74,4 +75,12 @@ func (e *EmailUseCase) PublishEmailToQueue(ctx context.Context, email *models.Em
 	}
 
 	return nil
+}
+
+// Find email by uuid
+func (e *EmailUseCase) FindEmailById(ctx context.Context, emailID uuid.UUID) (*models.Email, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailById")
+	defer span.Finish()
+
+	return e.emailsRepo.FindEmailById(ctx, emailID)
 }

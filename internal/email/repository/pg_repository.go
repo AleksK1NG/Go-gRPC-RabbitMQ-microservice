@@ -34,3 +34,28 @@ func (e *EmailsRepository) CreateEmail(ctx context.Context, email *models.Email)
 	email.EmailID = id
 	return email, nil
 }
+
+// Find email by id
+func (e *EmailsRepository) FindEmailById(ctx context.Context, emailID uuid.UUID) (*models.Email, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailsRepository.FindEmailById")
+	defer span.Finish()
+
+	findEmailByIdQuery := `SELECT email_id, "to", "from", subject, body, content_type, created_at FROM emails WHERE email_id = $1`
+
+	var to string
+	email := &models.Email{}
+	if err := e.db.QueryRowContext(ctx, findEmailByIdQuery, emailID).Scan(
+		&email.EmailID,
+		&to,
+		&email.From,
+		&email.Subject,
+		&email.Body,
+		&email.ContentType,
+		&email.CreatedAt,
+	); err != nil {
+		return nil, errors.Wrap(err, "db.QueryRowContext")
+	}
+	email.SetToFromString(to)
+
+	return email, nil
+}

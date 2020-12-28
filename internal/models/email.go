@@ -39,3 +39,8 @@ func (e *Email) PrepareAndValidate(ctx context.Context) error {
 
 	return utils.ValidateStruct(ctx, e)
 }
+
+// Set to array from string value
+func (e *Email) SetToFromString(to string) {
+	e.To = strings.Split(to, ",")
+}
