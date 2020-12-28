@@ -55,11 +55,25 @@ func (s *Server) Run() error {
 		s.cfg.Metrics.ServiceName,
 	)
 
+	emailsPublisher, err := rabbitmq.NewEmailsPublisher(s.cfg, s.logger)
+	if err != nil {
+		return err
+	}
+	//if err := emailsPublisher.SetupExchangeAndQueue(
+	//	s.cfg.RabbitMQ.Exchange,
+	//	s.cfg.RabbitMQ.Queue, "",
+	//	s.cfg.RabbitMQ.ConsumerTag,
+	//); err != nil {
+	//	return err
+	//}
+	defer emailsPublisher.CloseChan()
+	s.logger.Info("Emails Publisher initialized")
+
 	im := interceptors.NewInterceptorManager(s.logger, s.cfg, metric)
 
 	emailRepository := repository.NewEmailsRepository(s.db)
 	mailDialer := mailer.NewMailer(s.mailDialer)
-	emailUseCase := usecase.NewEmailUseCase(emailRepository, s.logger, mailDialer, s.cfg)
+	emailUseCase := usecase.NewEmailUseCase(emailRepository, s.logger, mailDialer, s.cfg, emailsPublisher)
 	emailsAmqpConsumer := rabbitmq.NewImagesConsumer(s.amqpConn, s.logger, emailUseCase)
 
 	go func() {
@@ -89,20 +103,6 @@ func (s *Server) Run() error {
 	}
 	defer l.Close()
 
-	emailsPublisher, err := rabbitmq.NewEmailsPublisher(s.cfg, s.logger)
-	if err != nil {
-		return err
-	}
-	//if err := emailsPublisher.SetupExchangeAndQueue(
-	//	s.cfg.RabbitMQ.Exchange,
-	//	s.cfg.RabbitMQ.Queue, "",
-	//	s.cfg.RabbitMQ.ConsumerTag,
-	//); err != nil {
-	//	return err
-	//}
-	defer emailsPublisher.CloseChan()
-	s.logger.Info("Emails Publisher initialized")
-
 	server := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{
 		MaxConnectionIdle: s.cfg.Server.MaxConnectionIdle * time.Minute,
 		Timeout:           s.cfg.Server.Timeout * time.Second,
@@ -117,7 +117,7 @@ func (s *Server) Run() error {
 		),
 	)
 
-	emailGrpcMicroservice := mailGrpc.NewEmailMicroservice(emailUseCase, emailsPublisher, s.logger)
+	emailGrpcMicroservice := mailGrpc.NewEmailMicroservice(emailUseCase, s.logger, s.cfg)
 	emailService.RegisterEmailServiceServer(server, emailGrpcMicroservice)
 	grpc_prometheus.Register(server)
 	s.logger.Info("Emails Service initialized")

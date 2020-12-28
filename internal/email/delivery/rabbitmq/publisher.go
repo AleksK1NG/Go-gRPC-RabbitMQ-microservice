@@ -4,8 +4,10 @@ import (
 	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
 	"github.com/AleksK1NG/email-microservice/pkg/rabbitmq"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/streadway/amqp"
+	"time"
 )
 
 // Emails rabbitmq publisher
@@ -100,9 +102,9 @@ func (p *EmailsPublisher) Publish(body []byte, contentType string) error {
 		amqp.Publishing{
 			ContentType:  contentType,
 			DeliveryMode: amqp.Persistent,
-			//MessageId:    uuid.New().String(),
-			//Timestamp:    time.Now(),
-			Body: body,
+			MessageId:    uuid.New().String(),
+			Timestamp:    time.Now(),
+			Body:         body,
 		},
 	); err != nil {
 		return errors.Wrap(err, "ch.Publish")

@@ -1,6 +1,10 @@
 package models
 
 import (
+	"context"
+	"fmt"
+	"github.com/AleksK1NG/email-microservice/pkg/mime_types"
+	"github.com/AleksK1NG/email-microservice/pkg/utils"
 	"github.com/google/uuid"
 	"strings"
 	"time"
@@ -20,4 +24,18 @@ type Email struct {
 // Get string from addresses
 func (e *Email) GetToString() string {
 	return strings.Join(e.To, ",")
+}
+
+// Prepare email for creation
+func (e *Email) PrepareAndValidate(ctx context.Context) error {
+	e.From = strings.TrimSpace(strings.ToLower(e.From))
+	for _, mail := range e.To {
+		if !utils.ValidateEmail(mail) {
+			return fmt.Errorf("invalid email: %s", mail)
+		}
+		mail = strings.TrimSpace(strings.ToLower(mail))
+	}
+	e.ContentType = mime_types.MIMEApplicationJSON
+
+	return utils.ValidateStruct(ctx, e)
 }
