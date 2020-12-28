@@ -2,19 +2,31 @@ package server
 
 import (
 	"github.com/AleksK1NG/email-microservice/config"
+	mailGrpc "github.com/AleksK1NG/email-microservice/internal/email/delivery/grpc"
 	"github.com/AleksK1NG/email-microservice/internal/email/delivery/rabbitmq"
 	"github.com/AleksK1NG/email-microservice/internal/email/mailer"
+	emailService "github.com/AleksK1NG/email-microservice/internal/email/proto"
 	"github.com/AleksK1NG/email-microservice/internal/email/repository"
 	"github.com/AleksK1NG/email-microservice/internal/email/usecase"
+	"github.com/AleksK1NG/email-microservice/internal/interceptors"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
+	"github.com/AleksK1NG/email-microservice/pkg/metrics"
+	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/streadway/amqp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/reflection"
 	"gopkg.in/gomail.v2"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 // Images service
@@ -33,6 +45,18 @@ func NewEmailsServer(amqpConn *amqp.Connection, logger logger.Logger, cfg *confi
 
 // Run server
 func (s *Server) Run() error {
+	metrics, err := metrics.CreateMetrics(s.cfg.Metrics.URL, s.cfg.Metrics.ServiceName)
+	if err != nil {
+		s.logger.Errorf("CreateMetrics Error: %s", err)
+	}
+	s.logger.Info(
+		"Metrics available URL: %s, ServiceName: %s",
+		s.cfg.Metrics.URL,
+		s.cfg.Metrics.ServiceName,
+	)
+
+	im := interceptors.NewInterceptorManager(s.logger, s.cfg, metrics)
+
 	emailRepository := repository.NewEmailsRepository(s.db)
 	mailDialer := mailer.NewMailer(s.mailDialer)
 	emailUseCase := usecase.NewEmailUseCase(emailRepository, s.logger, mailDialer, s.cfg)
@@ -58,10 +82,38 @@ func (s *Server) Run() error {
 		}
 	}()
 
+	l, err := net.Listen("tcp", s.cfg.Server.Port)
+	if err != nil {
+		return err
+	}
+	defer l.Close()
+
+	emailGrpcMicroservice := mailGrpc.NewEmailMicroservice(emailUseCase)
+
+	server := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{
+		MaxConnectionIdle: s.cfg.Server.MaxConnectionIdle * time.Minute,
+		Timeout:           s.cfg.Server.Timeout * time.Second,
+		MaxConnectionAge:  s.cfg.Server.MaxConnectionAge * time.Minute,
+		Time:              s.cfg.Server.Timeout * time.Minute,
+	}),
+		grpc.UnaryInterceptor(im.Logger),
+		grpc.ChainUnaryInterceptor(
+			grpc_ctxtags.UnaryServerInterceptor(),
+			grpc_prometheus.UnaryServerInterceptor,
+			grpcrecovery.UnaryServerInterceptor(),
+		),
+	)
+	emailService.RegisterEmailServiceServer(server, emailGrpcMicroservice)
+
+	if s.cfg.Server.Mode != "Production" {
+		reflection.Register(server)
+	}
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 
 	<-quit
+	server.GracefulStop()
 	s.logger.Info("Server Exited Properly")
 	return nil
 }

@@ -1,0 +1,30 @@
+// protoc --go_out=plugins=grpc:. *.proto
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package emailService;
+option go_package = ".;emailService";
+
+message Email {
+  string email_id = 1;
+  repeated string to = 2;
+  string from = 3;
+  string body = 4;
+  string subject = 5;
+  string content_type = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message SendEmailRequest {
+  Email email = 1;
+}
+
+message SendEmailResponse {
+  string status = 1;
+}
+
+service EmailService{
+  rpc SendEmails(SendEmailRequest) returns (SendEmailResponse);
+}
