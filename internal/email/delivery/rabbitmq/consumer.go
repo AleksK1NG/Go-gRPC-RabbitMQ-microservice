@@ -187,8 +187,8 @@ func (c *EmailsConsumer) StartConsumer(workerPoolSize int, exchange, queueName, 
 	}
 
 	wg := &sync.WaitGroup{}
+	wg.Add(workerPoolSize)
 	for i := 0; i < workerPoolSize; i++ {
-		wg.Add(1)
 		go c.worker(ctx, deliveries, wg)
 	}
 
