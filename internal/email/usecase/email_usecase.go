@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/internal/email"
-	"github.com/AleksK1NG/email-microservice/internal/email/delivery/rabbitmq"
 	"github.com/AleksK1NG/email-microservice/internal/models"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
 	"github.com/AleksK1NG/email-microservice/pkg/utils"
@@ -22,11 +21,11 @@ type EmailUseCase struct {
 	emailsRepo email.EmailsRepository
 	logger     logger.Logger
 	cfg        *config.Config
-	publisher  *rabbitmq.EmailsPublisher
+	publisher  email.EmailsPublisher
 }
 
 // Image useCase constructor
-func NewEmailUseCase(emailsRepo email.EmailsRepository, logger logger.Logger, mailer email.Mailer, cfg *config.Config, publisher *rabbitmq.EmailsPublisher) *EmailUseCase {
+func NewEmailUseCase(emailsRepo email.EmailsRepository, logger logger.Logger, mailer email.Mailer, cfg *config.Config, publisher email.EmailsPublisher) *EmailUseCase {
 	return &EmailUseCase{emailsRepo: emailsRepo, logger: logger, mailer: mailer, cfg: cfg, publisher: publisher}
 }
 
@@ -70,11 +69,7 @@ func (e *EmailUseCase) PublishEmailToQueue(ctx context.Context, email *models.Em
 		return errors.Wrap(err, "json.Marshal")
 	}
 
-	if err := e.publisher.Publish(mailBytes, email.ContentType); err != nil {
-		return errors.Wrap(err, "publisher.Publish")
-	}
-
-	return nil
+	return e.publisher.Publish(mailBytes, email.ContentType)
 }
 
 // Find email by uuid
