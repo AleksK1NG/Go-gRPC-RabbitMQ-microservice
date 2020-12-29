@@ -1,7 +1,10 @@
-### Golang [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) gRPC Auth microservice example with Prometheus, Grafana monitoring and Jaeger opentracing ⚡️
+### Go, RabbitMQ and gRPC [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) microservice 👋
+Here is article about create example of similar to real prodution mail microservice using RabbitMQ, gRPC, Prometheus, Grafana monitoring and Jaeger opentracing ⚡️
+
 
 #### 👨‍💻 Full list what has been used:
 * [GRPC](https://grpc.io/) - gRPC
+* [RabbitMQ](https://github.com/streadway/amqp) - RabbitMQ
 * [sqlx](https://github.com/jmoiron/sqlx) - Extensions to database/sql.
 * [pgx](https://github.com/jackc/pgx) - PostgreSQL driver and toolkit for Go
 * [viper](https://github.com/spf13/viper) - Go configuration with fangs
@@ -23,7 +26,7 @@
 
 #### 🙌👨‍💻🚀 Docker-compose files:
     docker-compose.local.yml - run postgresql, redis, aws, prometheus, grafana containers
-    docker-compose.dev.yml - run all in docker
+    docker-compose.yml - run all in docker
 
 ### Docker development usage:
     make docker
