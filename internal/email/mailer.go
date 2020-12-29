@@ -1,3 +1,4 @@
+//go:generate mockgen -source mailer.go -destination mock/mailer.go -package mock
 package email
 
 import (
