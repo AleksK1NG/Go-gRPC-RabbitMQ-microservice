@@ -1,3 +1,4 @@
+//go:generate mockgen -source email_rabbitmq.go -destination mock/email_rabbitmq.go -package mock
 package email
 
 // Emails publisher interface
