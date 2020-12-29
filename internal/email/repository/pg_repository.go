@@ -76,7 +76,7 @@ func (e *EmailsRepository) FindEmailsByReceiver(ctx context.Context, to string, 
 	}
 	defer func() {
 		if closeErr := rows.Close(); closeErr != nil {
-			err = closeErr
+			err = errors.Wrap(closeErr, "rows.Close")
 		}
 	}()
 
