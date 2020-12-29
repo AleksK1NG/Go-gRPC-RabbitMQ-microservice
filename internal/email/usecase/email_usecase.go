@@ -45,10 +45,10 @@ func (e *EmailUseCase) SendEmail(ctx context.Context, deliveryBody []byte) error
 		return errors.Wrap(err, "ValidateStruct")
 	}
 
-	//e.logger.Infof("SendEmail: %#v", mail)
-	//if err := e.mailer.Send(ctx, mail); err != nil {
-	//	return errors.Wrap(err, "mailer.Send")
-	//}
+	e.logger.Infof("Sending email")
+	if err := e.mailer.Send(ctx, mail); err != nil {
+		return errors.Wrap(err, "mailer.Send")
+	}
 
 	createdEmail, err := e.emailsRepo.CreateEmail(ctx, mail)
 	if err != nil {
