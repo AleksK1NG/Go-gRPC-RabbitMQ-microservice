@@ -31,34 +31,34 @@ func NewEmailsPublisher(cfg *config.Config, logger logger.Logger) (*EmailsPublis
 	return &EmailsPublisher{cfg: cfg, logger: logger, amqpChan: amqpChan}, nil
 }
 
-func (e *EmailsPublisher) SetupExchangeAndQueue(exchange, queueName, bindingKey, consumerTag string) error {
-	e.logger.Infof("Declaring exchange: %s", exchange)
-	err := e.amqpChan.ExchangeDeclare(
+func (p *EmailsPublisher) SetupExchangeAndQueue(exchange, queueName, bindingKey, consumerTag string) error {
+	p.logger.Infof("Declaring exchange: %s", exchange)
+	err := p.amqpChan.ExchangeDeclare(
 		exchange,
-		"direct",
-		true,
-		false,
-		false,
-		false,
+		exchangeKind,
+		exchangeDurable,
+		exchangeAutoDelete,
+		exchangeInternal,
+		exchangeNoWait,
 		nil,
 	)
 	if err != nil {
 		return errors.Wrap(err, "Error ch.ExchangeDeclare")
 	}
 
-	queue, err := e.amqpChan.QueueDeclare(
+	queue, err := p.amqpChan.QueueDeclare(
 		queueName,
-		true,
-		false,
-		false,
-		false,
+		queueDurable,
+		queueAutoDelete,
+		queueExclusive,
+		queueNoWait,
 		nil,
 	)
 	if err != nil {
 		return errors.Wrap(err, "Error ch.QueueDeclare")
 	}
 
-	e.logger.Infof("Declared queue, binding it to exchange: Queue: %v, messageCount: %v, "+
+	p.logger.Infof("Declared queue, binding it to exchange: Queue: %v, messageCount: %v, "+
 		"consumerCount: %v, exchange: %v, exchange: %v, bindingKey: %v",
 		queue.Name,
 		queue.Messages,
@@ -67,18 +67,18 @@ func (e *EmailsPublisher) SetupExchangeAndQueue(exchange, queueName, bindingKey,
 		bindingKey,
 	)
 
-	err = e.amqpChan.QueueBind(
+	err = p.amqpChan.QueueBind(
 		queue.Name,
 		bindingKey,
 		exchange,
-		false,
+		queueNoWait,
 		nil,
 	)
 	if err != nil {
 		return errors.Wrap(err, "Error ch.QueueBind")
 	}
 
-	e.logger.Infof("Queue bound to exchange, starting to consume from queue, consumerTag: %v", consumerTag)
+	p.logger.Infof("Queue bound to exchange, starting to consume from queue, consumerTag: %v", consumerTag)
 	return nil
 }
 
@@ -97,8 +97,8 @@ func (p *EmailsPublisher) Publish(body []byte, contentType string) error {
 	if err := p.amqpChan.Publish(
 		p.cfg.RabbitMQ.Exchange,
 		p.cfg.RabbitMQ.RoutingKey,
-		false,
-		false,
+		publishMandatory,
+		publishImmediate,
 		amqp.Publishing{
 			ContentType:  contentType,
 			DeliveryMode: amqp.Persistent,

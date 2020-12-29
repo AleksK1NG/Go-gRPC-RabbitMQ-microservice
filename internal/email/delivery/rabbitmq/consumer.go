@@ -12,6 +12,31 @@ import (
 	"sync"
 )
 
+const (
+	exchangeKind       = "direct"
+	exchangeDurable    = true
+	exchangeAutoDelete = false
+	exchangeInternal   = false
+	exchangeNoWait     = false
+
+	queueDurable    = true
+	queueAutoDelete = false
+	queueExclusive  = false
+	queueNoWait     = false
+
+	publishMandatory = false
+	publishImmediate = false
+
+	prefetchCount  = 1
+	prefetchSize   = 0
+	prefetchGlobal = false
+
+	consumeAutoAck   = false
+	consumeExclusive = false
+	consumeNoLocal   = false
+	consumeNoWait    = false
+)
+
 var (
 	incomingMessages = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "emails_incoming_rabbitmq_messages_total",
@@ -49,11 +74,11 @@ func (c *EmailsConsumer) CreateChannel(exchangeName, queueName, bindingKey, cons
 	c.logger.Infof("Declaring exchange: %s", exchangeName)
 	err = ch.ExchangeDeclare(
 		exchangeName,
-		"direct",
-		true,
-		false,
-		false,
-		false,
+		exchangeKind,
+		exchangeDurable,
+		exchangeAutoDelete,
+		exchangeInternal,
+		exchangeNoWait,
 		nil,
 	)
 	if err != nil {
@@ -62,10 +87,10 @@ func (c *EmailsConsumer) CreateChannel(exchangeName, queueName, bindingKey, cons
 
 	queue, err := ch.QueueDeclare(
 		queueName,
-		true,
-		false,
-		false,
-		false,
+		queueDurable,
+		queueAutoDelete,
+		queueExclusive,
+		queueNoWait,
 		nil,
 	)
 	if err != nil {
@@ -85,7 +110,7 @@ func (c *EmailsConsumer) CreateChannel(exchangeName, queueName, bindingKey, cons
 		queue.Name,
 		bindingKey,
 		exchangeName,
-		false,
+		queueNoWait,
 		nil,
 	)
 	if err != nil {
@@ -95,9 +120,9 @@ func (c *EmailsConsumer) CreateChannel(exchangeName, queueName, bindingKey, cons
 	c.logger.Infof("Queue bound to exchange, starting to consume from queue, consumerTag: %v", consumerTag)
 
 	err = ch.Qos(
-		1,     // prefetch count
-		0,     // prefetch size
-		false, // global
+		prefetchCount,  // prefetch count
+		prefetchSize,   // prefetch size
+		prefetchGlobal, // global
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "Error  ch.Qos")
@@ -121,15 +146,15 @@ func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delive
 			if err := delivery.Reject(false); err != nil {
 				c.logger.Errorf("Err delivery.Reject: %v", err)
 			}
-			errorMessages.Inc()
 			c.logger.Errorf("Failed to process delivery: %v", err)
+			errorMessages.Inc()
 			span.Finish()
 		} else {
-			successMessages.Inc()
 			err = delivery.Ack(false)
 			if err != nil {
 				c.logger.Errorf("Failed to acknowledge delivery: %v", err)
 			}
+			successMessages.Inc()
 			span.Finish()
 		}
 	}
@@ -151,10 +176,10 @@ func (c *EmailsConsumer) StartConsumer(workerPoolSize int, exchange, queueName, 
 	deliveries, err := ch.Consume(
 		queueName,
 		consumerTag,
-		false,
-		false,
-		false,
-		false,
+		consumeAutoAck,
+		consumeExclusive,
+		consumeNoLocal,
+		consumeNoWait,
 		nil,
 	)
 
