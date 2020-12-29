@@ -1,0 +1,89 @@
+server:
+  AppVersion: 1.0.0
+  Port: :5000
+  PprofPort: :5555
+  Mode: Development
+  JwtSecretKey: secretkey
+  CookieName: jwt-token
+  ReadTimeout: 5
+  WriteTimeout: 5
+  SSL: true
+  CtxDefaultTimeout: 12
+  CSRF: true
+  Debug: false
+  MaxConnectionIdle: 5
+  Timeout: 15
+  MaxConnectionAge: 5
+  Time: 120
+
+Smtp:
+  Host: Host.com
+  Port: 123
+  User: User@gmail.com
+  Password: Password
+
+rabbitmq:
+  Host: rabbitmq
+  Port: 5672
+  User: guest
+  Password: guest
+  Exchange: emails-exchange
+  Queue: emails-queue
+  RoutingKey: emails-routing-key
+  ConsumerTag: emails-consumer
+  WorkerPoolSize: 24
+
+
+logger:
+  Development: true
+  DisableCaller: false
+  DisableStacktrace: false
+  Encoding: json
+  Level: info
+
+postgres:
+  PostgresqlHost: postgesql
+  PostgresqlPort: 5432
+  PostgresqlUser: postgres
+  PostgresqlPassword: postgres
+  PostgresqlDbname: mails_db
+  PostgresqlSslmode: false
+  PgDriver: pgx
+
+redis:
+  RedisAddr: redis:6379
+  RedisPassword:
+  RedisDb: 0
+  RedisDefaultdb: 0
+  MinIdleConns: 200
+  PoolSize: 12000
+  PoolTimeout: 240
+  Password: ""
+  DB: 0
+
+cookie:
+  Name: jwt-token
+  MaxAge: 86400
+  Secure: false
+  HttpOnly: true
+
+session:
+  Name: session-id
+  Prefix: api-session
+  Expire: 3600
+
+metrics:
+  Url: 0.0.0.0:7070
+  ServiceName: mail_microservice
+
+aws:
+  Endpoint: 127.0.0.1:9000
+  MinioAccessKey: minio
+  MinioSecretKey: minio123
+  UseSSL: false
+  MinioEndpoint: http://127.0.0.1:9000
+
+jaeger:
+  Host: localhost:6831
+  ServiceName: mail_service
+  LogSpans: false
