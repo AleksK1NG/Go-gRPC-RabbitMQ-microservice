@@ -6,8 +6,17 @@ import (
 	"github.com/AleksK1NG/email-microservice/pkg/rabbitmq"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/streadway/amqp"
 	"time"
+)
+
+var (
+	publishedMessages = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "emails_published_rabbitmq_messages_total",
+		Help: "The total number of published RabbitMQ messages",
+	})
 )
 
 // Emails rabbitmq publisher
@@ -110,5 +119,6 @@ func (p *EmailsPublisher) Publish(body []byte, contentType string) error {
 		return errors.Wrap(err, "ch.Publish")
 	}
 
+	publishedMessages.Inc()
 	return nil
 }
