@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"strconv"
 )
@@ -22,7 +23,7 @@ func CreateMetrics(address string, name string) (Metrics, error) {
 		Name: name + "_hits_total",
 	})
 	if err := prometheus.Register(metr.HitsTotal); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "prometheus.Register")
 	}
 	metr.Hits = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
@@ -31,7 +32,7 @@ func CreateMetrics(address string, name string) (Metrics, error) {
 		[]string{"status", "method", "path"},
 	)
 	if err := prometheus.Register(metr.Hits); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "prometheus.Register")
 	}
 	metr.Times = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
@@ -40,18 +41,12 @@ func CreateMetrics(address string, name string) (Metrics, error) {
 		[]string{"status", "method", "path"},
 	)
 	if err := prometheus.Register(metr.Times); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "prometheus.Register")
 	}
 	if err := prometheus.Register(prometheus.NewBuildInfoCollector()); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "prometheus.Register")
 	}
-	//go func() {
-	//	router := echo.New()
-	//	router.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
-	//	if err := router.Start(address); err != nil {
-	//		log.Fatal(err)
-	//	}
-	//}()
+
 	return &metr, nil
 }
 

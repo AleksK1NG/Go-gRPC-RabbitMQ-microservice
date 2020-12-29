@@ -62,7 +62,5 @@ func main() {
 
 	s := server.NewEmailsServer(amqpConn, appLogger, cfg, mailDialer, psqlDB)
 
-	if err := s.Run(); err != nil {
-		appLogger.Fatal(err)
-	}
+	appLogger.Fatal(s.Run())
 }
