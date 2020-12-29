@@ -1,3 +1,4 @@
+//go:generate mockgen -source usecase.go -destination mock/usecase.go -package mock
 package email
 
 import (
