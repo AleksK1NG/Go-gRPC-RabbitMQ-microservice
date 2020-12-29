@@ -12,7 +12,6 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/pkg/errors"
-	"github.com/streadway/amqp"
 )
 
 // Image useCase
@@ -30,14 +29,16 @@ func NewEmailUseCase(emailsRepo email.EmailsRepository, logger logger.Logger, ma
 }
 
 // Send email
-func (e *EmailUseCase) SendEmail(ctx context.Context, delivery amqp.Delivery) error {
+func (e *EmailUseCase) SendEmail(ctx context.Context, deliveryBody []byte) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.SendEmail")
 	defer span.Finish()
 
 	mail := &models.Email{}
-	if err := json.Unmarshal(delivery.Body, mail); err != nil {
+	if err := json.Unmarshal(deliveryBody, mail); err != nil {
 		return errors.Wrap(err, "json.Unmarshal")
 	}
+
+	mail.Body = utils.SanitizeString(mail.Body)
 
 	mail.From = e.cfg.Smtp.User
 	if err := utils.ValidateStruct(ctx, mail); err != nil {
@@ -64,6 +65,8 @@ func (e *EmailUseCase) PublishEmailToQueue(ctx context.Context, email *models.Em
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.PublishEmailToQueue")
 	defer span.Finish()
 
+	email.Body = utils.SanitizeString(email.Body)
+
 	mailBytes, err := json.Marshal(email)
 	if err != nil {
 		return errors.Wrap(err, "json.Marshal")
@@ -82,7 +85,7 @@ func (e *EmailUseCase) FindEmailById(ctx context.Context, emailID uuid.UUID) (*m
 
 // Find emails by receiver
 func (e *EmailUseCase) FindEmailsByReceiver(ctx context.Context, to string, query *utils.PaginationQuery) (*models.EmailsList, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.SendEmail")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailsByReceiver")
 	defer span.Finish()
 
 	return e.emailsRepo.FindEmailsByReceiver(ctx, to, query)

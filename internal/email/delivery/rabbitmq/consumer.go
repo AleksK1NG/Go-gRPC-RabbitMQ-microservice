@@ -141,7 +141,7 @@ func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delive
 
 		incomingMessages.Inc()
 
-		err := c.emailUC.SendEmail(ctx, delivery)
+		err := c.emailUC.SendEmail(ctx, delivery.Body)
 		if err != nil {
 			if err := delivery.Reject(false); err != nil {
 				c.logger.Errorf("Err delivery.Reject: %v", err)
@@ -166,7 +166,7 @@ func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delive
 func (c *EmailsConsumer) StartConsumer(workerPoolSize int, exchange, queueName, bindingKey, consumerTag string) error {
 	ch, err := c.CreateChannel(exchange, queueName, bindingKey, consumerTag)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "CreateChannel")
 	}
 	defer ch.Close()
 
@@ -182,6 +182,9 @@ func (c *EmailsConsumer) StartConsumer(workerPoolSize int, exchange, queueName, 
 		consumeNoWait,
 		nil,
 	)
+	if err != nil {
+		return errors.Wrap(err, "Consume")
+	}
 
 	wg := &sync.WaitGroup{}
 	for i := 0; i < workerPoolSize; i++ {
