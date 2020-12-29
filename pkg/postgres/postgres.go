@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"time"
 
 	_ "github.com/jackc/pgx/stdlib" // pgx driver
@@ -28,7 +29,7 @@ func NewPsqlDB(c *config.Config) (*sqlx.DB, error) {
 
 	db, err := sqlx.Connect(c.Postgres.PgDriver, dataSourceName)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "sqlx.Connect")
 	}
 
 	db.SetMaxOpenConns(maxOpenConns)
@@ -36,7 +37,7 @@ func NewPsqlDB(c *config.Config) (*sqlx.DB, error) {
 	db.SetMaxIdleConns(maxIdleConns)
 	db.SetConnMaxIdleTime(connMaxIdleTime * time.Second)
 	if err = db.Ping(); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "db.Ping")
 	}
 
 	return db, nil
