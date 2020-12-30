@@ -97,8 +97,8 @@ func (c *EmailsConsumer) CreateChannel(exchangeName, queueName, bindingKey, cons
 		return nil, errors.Wrap(err, "Error ch.QueueDeclare")
 	}
 
-	c.logger.Infof("Declared queue, binding it to exchange: Queue: %v, messageCount: %v, "+
-		"consumerCount: %v, exchange: %v, exchange: %v, bindingKey: %v",
+	c.logger.Infof("Declared queue, binding it to exchange: Queue: %v, messagesCount: %v, "+
+		"consumerCount: %v, exchange: %v, bindingKey: %v",
 		queue.Name,
 		queue.Messages,
 		queue.Consumers,

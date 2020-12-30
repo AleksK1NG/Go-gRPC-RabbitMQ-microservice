@@ -26,7 +26,15 @@ func (e *EmailsRepository) CreateEmail(ctx context.Context, email *models.Email)
 	defer span.Finish()
 
 	var id uuid.UUID
-	if err := e.db.QueryRowxContext(ctx, createEmailQuery, email.GetToString(), email.From, email.Subject, email.Body, email.ContentType).Scan(&id); err != nil {
+	if err := e.db.QueryRowxContext(
+		ctx,
+		createEmailQuery,
+		email.GetToString(),
+		email.From,
+		email.Subject,
+		email.Body,
+		email.ContentType,
+	).Scan(&id); err != nil {
 		return nil, errors.Wrap(err, "db.QueryRowxContext")
 	}
 
