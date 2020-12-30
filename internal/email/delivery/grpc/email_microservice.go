@@ -44,6 +44,8 @@ func (e *EmailMicroservice) SendEmails(ctx context.Context, r *emailService.Send
 		return nil, status.Errorf(grpc_errors.ParseGRPCErrStatusCode(err), "PrepareAndValidate: %v", err)
 	}
 
+	mail.Body = utils.SanitizeString(mail.Body)
+
 	if err := e.emailUC.PublishEmailToQueue(ctx, mail); err != nil {
 		e.logger.Errorf("emailUC.PublishEmailToQueue: %v", err)
 		return nil, status.Errorf(grpc_errors.ParseGRPCErrStatusCode(err), "emailUC.PublishEmailToQueue: %v", err)

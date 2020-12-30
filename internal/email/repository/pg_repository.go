@@ -26,7 +26,7 @@ func (e *EmailsRepository) CreateEmail(ctx context.Context, email *models.Email)
 	defer span.Finish()
 
 	var id uuid.UUID
-	if err := e.db.QueryRowxContext(
+	if err := e.db.QueryRowContext(
 		ctx,
 		createEmailQuery,
 		email.GetToString(),

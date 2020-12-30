@@ -45,7 +45,6 @@ func (e *EmailUseCase) SendEmail(ctx context.Context, deliveryBody []byte) error
 		return errors.Wrap(err, "ValidateStruct")
 	}
 
-	e.logger.Infof("Sending email")
 	if err := e.mailer.Send(ctx, mail); err != nil {
 		return errors.Wrap(err, "mailer.Send")
 	}
@@ -64,8 +63,6 @@ func (e *EmailUseCase) SendEmail(ctx context.Context, deliveryBody []byte) error
 func (e *EmailUseCase) PublishEmailToQueue(ctx context.Context, email *models.Email) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.PublishEmailToQueue")
 	defer span.Finish()
-
-	email.Body = utils.SanitizeString(email.Body)
 
 	mailBytes, err := json.Marshal(email)
 	if err != nil {

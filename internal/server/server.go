@@ -122,9 +122,7 @@ func (s *Server) Run() error {
 
 	go func() {
 		s.logger.Infof("Server is listening on port: %v", s.cfg.Server.Port)
-		if err := server.Serve(l); err != nil {
-			s.logger.Fatal(err)
-		}
+		s.logger.Fatal(server.Serve(l))
 	}()
 
 	quit := make(chan os.Signal, 1)

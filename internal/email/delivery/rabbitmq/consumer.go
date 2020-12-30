@@ -148,15 +148,14 @@ func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delive
 			}
 			c.logger.Errorf("Failed to process delivery: %v", err)
 			errorMessages.Inc()
-			span.Finish()
 		} else {
 			err = delivery.Ack(false)
 			if err != nil {
 				c.logger.Errorf("Failed to acknowledge delivery: %v", err)
 			}
 			successMessages.Inc()
-			span.Finish()
 		}
+		span.Finish()
 	}
 
 	c.logger.Info("Deliveries channel closed")
