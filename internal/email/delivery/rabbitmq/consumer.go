@@ -9,7 +9,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/streadway/amqp"
-	"sync"
 )
 
 const (
@@ -131,8 +130,7 @@ func (c *EmailsConsumer) CreateChannel(exchangeName, queueName, bindingKey, cons
 	return ch, nil
 }
 
-func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delivery, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delivery) {
 
 	for delivery := range messages {
 		span, ctx := opentracing.StartSpanFromContext(ctx, "EmailsConsumer.worker")
@@ -163,14 +161,14 @@ func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delive
 
 // Start new rabbitmq consumer
 func (c *EmailsConsumer) StartConsumer(workerPoolSize int, exchange, queueName, bindingKey, consumerTag string) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	ch, err := c.CreateChannel(exchange, queueName, bindingKey, consumerTag)
 	if err != nil {
 		return errors.Wrap(err, "CreateChannel")
 	}
 	defer ch.Close()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	deliveries, err := ch.Consume(
 		queueName,
@@ -185,12 +183,11 @@ func (c *EmailsConsumer) StartConsumer(workerPoolSize int, exchange, queueName, 
 		return errors.Wrap(err, "Consume")
 	}
 
-	wg := &sync.WaitGroup{}
-	wg.Add(workerPoolSize)
 	for i := 0; i < workerPoolSize; i++ {
-		go c.worker(ctx, deliveries, wg)
+		go c.worker(ctx, deliveries)
 	}
 
-	wg.Wait()
-	return nil
+	chanErr := <-ch.NotifyClose(make(chan *amqp.Error))
+	c.logger.Errorf("ch.NotifyClose: %v", chanErr)
+	return chanErr
 }

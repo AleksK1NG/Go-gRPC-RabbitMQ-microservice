@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"github.com/AleksK1NG/email-microservice/config"
 	mailGrpc "github.com/AleksK1NG/email-microservice/internal/email/delivery/grpc"
 	"github.com/AleksK1NG/email-microservice/internal/email/delivery/rabbitmq"
@@ -59,7 +60,6 @@ func (s *Server) Run() error {
 	if err != nil {
 		return err
 	}
-
 	defer emailsPublisher.CloseChan()
 	s.logger.Info("Emails Publisher initialized")
 
@@ -70,6 +70,18 @@ func (s *Server) Run() error {
 	emailUseCase := usecase.NewEmailUseCase(emailRepository, s.logger, mailDialer, s.cfg, emailsPublisher)
 	emailsAmqpConsumer := rabbitmq.NewImagesConsumer(s.amqpConn, s.logger, emailUseCase)
 
+	ctx, cancel := context.WithCancel(context.Background())
+
+	router := echo.New()
+	router.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
+
+	go func() {
+		if err := router.Start(s.cfg.Metrics.URL); err != nil {
+			s.logger.Errorf("router.Start metrics: %v", err)
+			cancel()
+		}
+	}()
+
 	go func() {
 		err := emailsAmqpConsumer.StartConsumer(
 			s.cfg.RabbitMQ.WorkerPoolSize,
@@ -79,15 +91,8 @@ func (s *Server) Run() error {
 			s.cfg.RabbitMQ.ConsumerTag,
 		)
 		if err != nil {
-			s.logger.Fatalf("StartConsumer: %v", err)
-		}
-	}()
-
-	go func() {
-		router := echo.New()
-		router.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
-		if err := router.Start(s.cfg.Metrics.URL); err != nil {
-			s.logger.Fatalf("router.Start metrics: %v", err)
+			s.logger.Errorf("StartConsumer: %v", err)
+			cancel()
 		}
 	}()
 
@@ -128,8 +133,18 @@ func (s *Server) Run() error {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 
-	<-quit
+	select {
+	case v := <-quit:
+		s.logger.Errorf("signal.Notify: %v", v)
+	case done := <-ctx.Done():
+		s.logger.Errorf("ctx.Done: %v", done)
+	}
+
+	if err := router.Shutdown(ctx); err != nil {
+		s.logger.Errorf("Metrics router.Shutdown: %v", err)
+	}
 	server.GracefulStop()
 	s.logger.Info("Server Exited Properly")
+
 	return nil
 }
