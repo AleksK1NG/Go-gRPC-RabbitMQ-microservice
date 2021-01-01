@@ -26,7 +26,7 @@ services:
 
   postgesql:
     image: postgres:13-alpine
-    container_name: auth_postgesql
+    container_name: mail_postgesql
     ports:
       - "5432:5432"
     restart: always

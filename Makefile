@@ -43,17 +43,19 @@ run-linter:
 # ==============================================================================
 # Go migrate postgresql
 
+DB_NAME = mails_db
+
 force:
-	migrate -database postgres://postgres:postgres@localhost:5432/mails_db?sslmode=disable -path migrations force 1
+	migrate -database postgres://postgres:postgres@localhost:5432/$(DB_NAME)?sslmode=disable -path migrations force 1
 
 version:
-	migrate -database postgres://postgres:postgres@localhost:5432/mails_db?sslmode=disable -path migrations version
+	migrate -database postgres://postgres:postgres@localhost:5432/$(DB_NAME)?sslmode=disable -path migrations version
 
 migrate_up:
-	migrate -database postgres://postgres:postgres@localhost:5432/mails_db?sslmode=disable -path migrations up 1
+	migrate -database postgres://postgres:postgres@localhost:5432/$(DB_NAME)?sslmode=disable -path migrations up 1
 
 migrate_down:
-	migrate -database postgres://postgres:postgres@localhost:5432/mails_db?sslmode=disable -path migrations down 1
+	migrate -database postgres://postgres:postgres@localhost:5432/$(DB_NAME)?sslmode=disable -path migrations down 1
 
 
 # ==============================================================================
