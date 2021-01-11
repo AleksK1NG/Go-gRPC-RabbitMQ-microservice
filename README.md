@@ -8,7 +8,6 @@ Here is article about create example of similar to real production mail microser
 * [sqlx](https://github.com/jmoiron/sqlx) - Extensions to database/sql.
 * [pgx](https://github.com/jackc/pgx) - PostgreSQL driver and toolkit for Go
 * [viper](https://github.com/spf13/viper) - Go configuration with fangs
-* [go-redis](https://github.com/go-redis/redis) - Redis client for Golang
 * [zap](https://github.com/uber-go/zap) - Logger
 * [validator](https://github.com/go-playground/validator) - Go Struct and Field validation
 * [migrate](https://github.com/golang-migrate/migrate) - Database migrations. CLI and Golang library.
@@ -19,6 +18,12 @@ Here is article about create example of similar to real production mail microser
 * [Prometheus](https://prometheus.io/) - Prometheus
 * [Grafana](https://grafana.com/) - Grafana
 * [Jaeger](https://www.jaegertracing.io/) - Jaeger tracing
+* [Bluemonday](https://github.com/microcosm-cc/bluemonday) - HTML sanitizer
+* [Gomail](https://github.com/go-gomail/gomail/tree/v2) - Simple and efficient package to send emails
+* [Go-sqlmock](https://github.com/DATA-DOG/go-sqlmock) - Sql mock driver for golang to test database interactions
+* [Go-grpc-middleware](https://github.com/grpc-ecosystem/go-grpc-middleware) - interceptor chaining, auth, logging, retries and more
+* [Opentracing-go](https://github.com/opentracing/opentracing-go) - OpenTracing API for Go
+* [Prometheus-go-client](https://github.com/prometheus/client_golang) - Prometheus instrumentation library for Go applications
 
 #### Recommendation for local development most comfortable usage:
     make local // run all containers
