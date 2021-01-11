@@ -1,5 +1,4 @@
 ### Go, RabbitMQ and gRPC [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) microservice 👋
-Here is article about create example of similar to real production mail microservice using RabbitMQ, gRPC, Prometheus, Grafana monitoring and Jaeger opentracing ⚡️
 
 
 #### 👨‍💻 Full list what has been used:
@@ -30,7 +29,7 @@ Here is article about create example of similar to real production mail microser
     make run // run the application
 
 #### 🙌👨‍💻🚀 Docker-compose files:
-    docker-compose.local.yml - run postgresql, redis, aws, prometheus, grafana containers
+    docker-compose.local.yml - run rabbitmq, postgresql, jaeger, prometheus, grafana containers
     docker-compose.yml - run all in docker
 
 ### Docker development usage:
