@@ -2,6 +2,12 @@ package grpc
 
 import (
 	"context"
+
+	"github.com/google/uuid"
+	"github.com/opentracing/opentracing-go"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/internal/email"
 	emailService "github.com/AleksK1NG/email-microservice/internal/email/proto"
@@ -9,10 +15,6 @@ import (
 	"github.com/AleksK1NG/email-microservice/pkg/grpc_errors"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
 	"github.com/AleksK1NG/email-microservice/pkg/utils"
-	"github.com/google/uuid"
-	"github.com/opentracing/opentracing-go"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Email gRPC microservice

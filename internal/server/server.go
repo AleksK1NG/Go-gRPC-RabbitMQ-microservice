@@ -2,16 +2,12 @@ package server
 
 import (
 	"context"
-	"github.com/AleksK1NG/email-microservice/config"
-	mailGrpc "github.com/AleksK1NG/email-microservice/internal/email/delivery/grpc"
-	"github.com/AleksK1NG/email-microservice/internal/email/delivery/rabbitmq"
-	"github.com/AleksK1NG/email-microservice/internal/email/mailer"
-	emailService "github.com/AleksK1NG/email-microservice/internal/email/proto"
-	"github.com/AleksK1NG/email-microservice/internal/email/repository"
-	"github.com/AleksK1NG/email-microservice/internal/email/usecase"
-	"github.com/AleksK1NG/email-microservice/internal/interceptors"
-	"github.com/AleksK1NG/email-microservice/pkg/logger"
-	"github.com/AleksK1NG/email-microservice/pkg/metrics"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
@@ -23,11 +19,17 @@ import (
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 	"gopkg.in/gomail.v2"
-	"net"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
+
+	"github.com/AleksK1NG/email-microservice/config"
+	mailGrpc "github.com/AleksK1NG/email-microservice/internal/email/delivery/grpc"
+	"github.com/AleksK1NG/email-microservice/internal/email/delivery/rabbitmq"
+	"github.com/AleksK1NG/email-microservice/internal/email/mailer"
+	emailService "github.com/AleksK1NG/email-microservice/internal/email/proto"
+	"github.com/AleksK1NG/email-microservice/internal/email/repository"
+	"github.com/AleksK1NG/email-microservice/internal/email/usecase"
+	"github.com/AleksK1NG/email-microservice/internal/interceptors"
+	"github.com/AleksK1NG/email-microservice/pkg/logger"
+	"github.com/AleksK1NG/email-microservice/pkg/metrics"
 )
 
 // Images service

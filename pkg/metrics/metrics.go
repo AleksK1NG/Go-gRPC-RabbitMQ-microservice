@@ -1,9 +1,10 @@
 package metrics
 
 import (
+	"strconv"
+
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
-	"strconv"
 )
 
 type Metrics interface {

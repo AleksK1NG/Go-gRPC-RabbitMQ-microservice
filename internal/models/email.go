@@ -3,11 +3,13 @@ package models
 import (
 	"context"
 	"fmt"
-	"github.com/AleksK1NG/email-microservice/pkg/mime_types"
-	"github.com/AleksK1NG/email-microservice/pkg/utils"
-	"github.com/google/uuid"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+
+	"github.com/AleksK1NG/email-microservice/pkg/mime_types"
+	"github.com/AleksK1NG/email-microservice/pkg/utils"
 )
 
 // Email struct
@@ -29,11 +31,11 @@ func (e *Email) GetToString() string {
 // Prepare email for creation
 func (e *Email) PrepareAndValidate(ctx context.Context) error {
 	e.From = strings.TrimSpace(strings.ToLower(e.From))
-	for _, mail := range e.To {
-		if !utils.ValidateEmail(mail) {
+	for i, mail := range e.To {
+		if !utils.ValidateEmail(e.To[i]) {
 			return fmt.Errorf("invalid email: %s", mail)
 		}
-		mail = strings.TrimSpace(strings.ToLower(mail))
+		e.To[i] = strings.TrimSpace(strings.ToLower(e.To[i]))
 	}
 	e.ContentType = mime_types.MIMEApplicationJSON
 

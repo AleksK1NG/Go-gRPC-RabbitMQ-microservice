@@ -37,7 +37,7 @@ deps-cleancache:
 
 run-linter:
 	echo "Starting linters"
-	golangci-lint -c .golangci.yml run ./...
+	golangci-lint run ./...
 
 
 # ==============================================================================

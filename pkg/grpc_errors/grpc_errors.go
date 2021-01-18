@@ -3,10 +3,11 @@ package grpc_errors
 import (
 	"context"
 	"database/sql"
-	"github.com/pkg/errors"
-	"google.golang.org/grpc/codes"
 	"net/http"
 	"strings"
+
+	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
 )
 
 var (

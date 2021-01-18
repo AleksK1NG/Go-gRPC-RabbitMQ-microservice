@@ -2,9 +2,11 @@ package mailer
 
 import (
 	"context"
-	"github.com/AleksK1NG/email-microservice/internal/models"
+
 	"github.com/opentracing/opentracing-go"
 	"gopkg.in/gomail.v2"
+
+	"github.com/AleksK1NG/email-microservice/internal/models"
 )
 
 // Mailer agent
@@ -19,7 +21,7 @@ func NewMailer(mailDialer *gomail.Dialer) *Mailer {
 
 // Send email
 func (m *Mailer) Send(ctx context.Context, email *models.Email) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "Mailer.Send")
+	span, _ := opentracing.StartSpanFromContext(ctx, "Mailer.Send")
 	defer span.Finish()
 
 	gm := gomail.NewMessage()

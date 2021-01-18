@@ -1,8 +1,9 @@
 package mailer
 
 import (
-	"github.com/AleksK1NG/email-microservice/config"
 	"gopkg.in/gomail.v2"
+
+	"github.com/AleksK1NG/email-microservice/config"
 )
 
 // New Mail dialer

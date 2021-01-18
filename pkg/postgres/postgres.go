@@ -2,10 +2,12 @@ package postgres
 
 import (
 	"fmt"
-	"github.com/AleksK1NG/email-microservice/config"
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
-	"time"
+
+	"github.com/AleksK1NG/email-microservice/config"
 
 	_ "github.com/jackc/pgx/stdlib" // pgx driver
 )

@@ -1,13 +1,15 @@
 package jaeger
 
 import (
-	"github.com/AleksK1NG/email-microservice/config"
+	"io"
+
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
 	jaegerlog "github.com/uber/jaeger-client-go/log"
 	"github.com/uber/jaeger-lib/metrics"
-	"io"
+
+	"github.com/AleksK1NG/email-microservice/config"
 )
 
 // Init Jaeger

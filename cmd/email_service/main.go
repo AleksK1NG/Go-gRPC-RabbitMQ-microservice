@@ -1,6 +1,11 @@
 package main
 
 import (
+	"log"
+	"os"
+
+	"github.com/opentracing/opentracing-go"
+
 	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/internal/server"
 	"github.com/AleksK1NG/email-microservice/pkg/jaeger"
@@ -8,9 +13,6 @@ import (
 	"github.com/AleksK1NG/email-microservice/pkg/mailer"
 	"github.com/AleksK1NG/email-microservice/pkg/postgres"
 	"github.com/AleksK1NG/email-microservice/pkg/rabbitmq"
-	"github.com/opentracing/opentracing-go"
-	"log"
-	"os"
 )
 
 func main() {

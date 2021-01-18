@@ -2,12 +2,14 @@ package repository
 
 import (
 	"context"
-	"github.com/AleksK1NG/email-microservice/internal/models"
-	"github.com/AleksK1NG/email-microservice/pkg/utils"
+
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
+
+	"github.com/AleksK1NG/email-microservice/internal/models"
+	"github.com/AleksK1NG/email-microservice/pkg/utils"
 )
 
 // Images Emails Repository

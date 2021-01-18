@@ -3,15 +3,17 @@ package usecase
 import (
 	"context"
 	"encoding/json"
+
+	"github.com/google/uuid"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/log"
+	"github.com/pkg/errors"
+
 	"github.com/AleksK1NG/email-microservice/config"
 	"github.com/AleksK1NG/email-microservice/internal/email"
 	"github.com/AleksK1NG/email-microservice/internal/models"
 	"github.com/AleksK1NG/email-microservice/pkg/logger"
 	"github.com/AleksK1NG/email-microservice/pkg/utils"
-	"github.com/google/uuid"
-	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/log"
-	"github.com/pkg/errors"
 )
 
 // Image useCase
@@ -61,7 +63,7 @@ func (e *EmailUseCase) SendEmail(ctx context.Context, deliveryBody []byte) error
 
 // Publish email to rabbitmq
 func (e *EmailUseCase) PublishEmailToQueue(ctx context.Context, email *models.Email) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.PublishEmailToQueue")
+	span, _ := opentracing.StartSpanFromContext(ctx, "EmailUseCase.PublishEmailToQueue")
 	defer span.Finish()
 
 	mailBytes, err := json.Marshal(email)

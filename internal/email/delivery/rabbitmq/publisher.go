@@ -1,15 +1,17 @@
 package rabbitmq
 
 import (
-	"github.com/AleksK1NG/email-microservice/config"
-	"github.com/AleksK1NG/email-microservice/pkg/logger"
-	"github.com/AleksK1NG/email-microservice/pkg/rabbitmq"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/streadway/amqp"
-	"time"
+
+	"github.com/AleksK1NG/email-microservice/config"
+	"github.com/AleksK1NG/email-microservice/pkg/logger"
+	"github.com/AleksK1NG/email-microservice/pkg/rabbitmq"
 )
 
 var (

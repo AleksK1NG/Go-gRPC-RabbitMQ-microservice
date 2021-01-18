@@ -2,8 +2,10 @@ package rabbitmq
 
 import (
 	"fmt"
-	"github.com/AleksK1NG/email-microservice/config"
+
 	"github.com/streadway/amqp"
+
+	"github.com/AleksK1NG/email-microservice/config"
 )
 
 // Initialize new RabbitMQ connection

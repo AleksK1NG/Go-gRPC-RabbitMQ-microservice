@@ -2,13 +2,15 @@ package rabbitmq
 
 import (
 	"context"
-	"github.com/AleksK1NG/email-microservice/internal/email"
-	"github.com/AleksK1NG/email-microservice/pkg/logger"
+
 	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/streadway/amqp"
+
+	"github.com/AleksK1NG/email-microservice/internal/email"
+	"github.com/AleksK1NG/email-microservice/pkg/logger"
 )
 
 const (
