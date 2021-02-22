@@ -14,7 +14,7 @@ type Mailer struct {
 	mailDialer *gomail.Dialer
 }
 
-// Mailer agent constructor
+// NewMailer Mailer agent constructor
 func NewMailer(mailDialer *gomail.Dialer) *Mailer {
 	return &Mailer{mailDialer: mailDialer}
 }

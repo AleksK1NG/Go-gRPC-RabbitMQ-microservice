@@ -53,19 +53,19 @@ var (
 	})
 )
 
-// Images Rabbitmq consumer
+// EmailsConsumer Images Rabbitmq consumer
 type EmailsConsumer struct {
 	amqpConn *amqp.Connection
 	logger   logger.Logger
 	emailUC  email.EmailsUseCase
 }
 
-// Images Consumer constructor
+// NewImagesConsumer Images Consumer constructor
 func NewImagesConsumer(amqpConn *amqp.Connection, logger logger.Logger, emailUC email.EmailsUseCase) *EmailsConsumer {
 	return &EmailsConsumer{amqpConn: amqpConn, logger: logger, emailUC: emailUC}
 }
 
-// Consume messages
+// CreateChannel Consume messages
 func (c *EmailsConsumer) CreateChannel(exchangeName, queueName, bindingKey, consumerTag string) (*amqp.Channel, error) {
 	ch, err := c.amqpConn.Channel()
 	if err != nil {
@@ -161,7 +161,7 @@ func (c *EmailsConsumer) worker(ctx context.Context, messages <-chan amqp.Delive
 	c.logger.Info("Deliveries channel closed")
 }
 
-// Start new rabbitmq consumer
+// StartConsumer Start new rabbitmq consumer
 func (c *EmailsConsumer) StartConsumer(workerPoolSize int, exchange, queueName, bindingKey, consumerTag string) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

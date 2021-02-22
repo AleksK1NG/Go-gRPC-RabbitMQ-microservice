@@ -16,7 +16,7 @@ import (
 	"github.com/AleksK1NG/email-microservice/pkg/utils"
 )
 
-// Image useCase
+// EmailUseCase Image useCase
 type EmailUseCase struct {
 	mailer     email.Mailer
 	emailsRepo email.EmailsRepository
@@ -25,12 +25,12 @@ type EmailUseCase struct {
 	publisher  email.EmailsPublisher
 }
 
-// Image useCase constructor
+// NewEmailUseCase Image useCase constructor
 func NewEmailUseCase(emailsRepo email.EmailsRepository, logger logger.Logger, mailer email.Mailer, cfg *config.Config, publisher email.EmailsPublisher) *EmailUseCase {
 	return &EmailUseCase{emailsRepo: emailsRepo, logger: logger, mailer: mailer, cfg: cfg, publisher: publisher}
 }
 
-// Send email
+// SendEmail Send email
 func (e *EmailUseCase) SendEmail(ctx context.Context, deliveryBody []byte) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.SendEmail")
 	defer span.Finish()
@@ -61,7 +61,7 @@ func (e *EmailUseCase) SendEmail(ctx context.Context, deliveryBody []byte) error
 	return nil
 }
 
-// Publish email to rabbitmq
+// PublishEmailToQueue Publish email to rabbitmq
 func (e *EmailUseCase) PublishEmailToQueue(ctx context.Context, email *models.Email) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "EmailUseCase.PublishEmailToQueue")
 	defer span.Finish()
@@ -74,7 +74,7 @@ func (e *EmailUseCase) PublishEmailToQueue(ctx context.Context, email *models.Em
 	return e.publisher.Publish(mailBytes, email.ContentType)
 }
 
-// Find email by uuid
+// FindEmailById Find email by uuid
 func (e *EmailUseCase) FindEmailById(ctx context.Context, emailID uuid.UUID) (*models.Email, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailById")
 	defer span.Finish()
@@ -82,7 +82,7 @@ func (e *EmailUseCase) FindEmailById(ctx context.Context, emailID uuid.UUID) (*m
 	return e.emailsRepo.FindEmailById(ctx, emailID)
 }
 
-// Find emails by receiver
+// FindEmailsByReceiver Find emails by receiver
 func (e *EmailUseCase) FindEmailsByReceiver(ctx context.Context, to string, query *utils.PaginationQuery) (*models.EmailsList, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailsByReceiver")
 	defer span.Finish()

@@ -17,19 +17,19 @@ import (
 	"github.com/AleksK1NG/email-microservice/pkg/utils"
 )
 
-// Email gRPC microservice
+// EmailMicroservice Email gRPC microservice
 type EmailMicroservice struct {
 	cfg     *config.Config
 	logger  logger.Logger
 	emailUC email.EmailsUseCase
 }
 
-// Email gRPC microservice constructor
+// NewEmailMicroservice Email gRPC microservice constructor
 func NewEmailMicroservice(emailUC email.EmailsUseCase, logger logger.Logger, cfg *config.Config) *EmailMicroservice {
 	return &EmailMicroservice{emailUC: emailUC, logger: logger, cfg: cfg}
 }
 
-// Send emails
+// SendEmails Send emails
 func (e *EmailMicroservice) SendEmails(ctx context.Context, r *emailService.SendEmailRequest) (*emailService.SendEmailResponse, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.SendEmail")
 	defer span.Finish()
@@ -56,7 +56,7 @@ func (e *EmailMicroservice) SendEmails(ctx context.Context, r *emailService.Send
 	return &emailService.SendEmailResponse{Status: "Ok"}, nil
 }
 
-// Find email by id
+// FindEmailById Find email by id
 func (e *EmailMicroservice) FindEmailById(ctx context.Context, r *emailService.FindEmailByIdRequest) (*emailService.FindEmailByIdResponse, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailById")
 	defer span.Finish()
@@ -76,7 +76,7 @@ func (e *EmailMicroservice) FindEmailById(ctx context.Context, r *emailService.F
 	return &emailService.FindEmailByIdResponse{Email: e.convertEmailToProto(emailById)}, nil
 }
 
-// Find emails by receiver address
+// FindEmailsByReceiver Find emails by receiver address
 func (e *EmailMicroservice) FindEmailsByReceiver(ctx context.Context, r *emailService.FindEmailsByReceiverRequest) (*emailService.FindEmailsByReceiverResponse, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailUseCase.FindEmailById")
 	defer span.Finish()

@@ -32,7 +32,7 @@ import (
 	"github.com/AleksK1NG/email-microservice/pkg/metrics"
 )
 
-// Images service
+// Server
 type Server struct {
 	db         *sqlx.DB
 	mailDialer *gomail.Dialer

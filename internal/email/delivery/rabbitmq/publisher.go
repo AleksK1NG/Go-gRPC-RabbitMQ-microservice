@@ -21,14 +21,14 @@ var (
 	})
 )
 
-// Emails rabbitmq publisher
+// EmailsPublisher Emails rabbitmq publisher
 type EmailsPublisher struct {
 	amqpChan *amqp.Channel
 	cfg      *config.Config
 	logger   logger.Logger
 }
 
-// Emails rabbitmq publisher constructor
+// NewEmailsPublisher Emails rabbitmq publisher constructor
 func NewEmailsPublisher(cfg *config.Config, logger logger.Logger) (*EmailsPublisher, error) {
 	mqConn, err := rabbitmq.NewRabbitMQConn(cfg)
 	if err != nil {
@@ -42,6 +42,7 @@ func NewEmailsPublisher(cfg *config.Config, logger logger.Logger) (*EmailsPublis
 	return &EmailsPublisher{cfg: cfg, logger: logger, amqpChan: amqpChan}, nil
 }
 
+// SetupExchangeAndQueue create exchange and queue
 func (p *EmailsPublisher) SetupExchangeAndQueue(exchange, queueName, bindingKey, consumerTag string) error {
 	p.logger.Infof("Declaring exchange: %s", exchange)
 	err := p.amqpChan.ExchangeDeclare(
@@ -93,7 +94,7 @@ func (p *EmailsPublisher) SetupExchangeAndQueue(exchange, queueName, bindingKey,
 	return nil
 }
 
-// Close messages chan
+// CloseChan Close messages chan
 func (p *EmailsPublisher) CloseChan() {
 	if err := p.amqpChan.Close(); err != nil {
 		p.logger.Errorf("EmailsPublisher CloseChan: %v", err)

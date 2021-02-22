@@ -12,17 +12,17 @@ import (
 	"github.com/AleksK1NG/email-microservice/pkg/utils"
 )
 
-// Images Emails Repository
+// EmailsRepository Images Emails Repository
 type EmailsRepository struct {
 	db *sqlx.DB
 }
 
-// Images AWS repository constructor
+// NewEmailsRepository Images AWS repository constructor
 func NewEmailsRepository(db *sqlx.DB) *EmailsRepository {
 	return &EmailsRepository{db: db}
 }
 
-// Create email
+// CreateEmail Create email
 func (e *EmailsRepository) CreateEmail(ctx context.Context, email *models.Email) (*models.Email, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailsRepository.CreateEmail")
 	defer span.Finish()
@@ -44,7 +44,7 @@ func (e *EmailsRepository) CreateEmail(ctx context.Context, email *models.Email)
 	return email, nil
 }
 
-// Find email by id
+// FindEmailById Find email by id
 func (e *EmailsRepository) FindEmailById(ctx context.Context, emailID uuid.UUID) (*models.Email, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailsRepository.FindEmailById")
 	defer span.Finish()
@@ -67,7 +67,7 @@ func (e *EmailsRepository) FindEmailById(ctx context.Context, emailID uuid.UUID)
 	return email, nil
 }
 
-// Find emails by receiver
+// FindEmailsByReceiver Find emails by receiver
 func (e *EmailsRepository) FindEmailsByReceiver(ctx context.Context, to string, query *utils.PaginationQuery) (list *models.EmailsList, err error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "EmailsRepository.FindEmailsByReceiver")
 	defer span.Finish()
